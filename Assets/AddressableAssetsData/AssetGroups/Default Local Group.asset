@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Default Local Group
+  m_EditorClassIdentifier: 
+  m_GroupName: Default Local Group
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 9f08737a0d151094784b7fd8b5045237
+  m_SerializeEntries:
+  - m_GUID: 7af636568e389894d94e7279502513cf
+    m_Address: FPS Counter
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 87563776bfc551145af60eabc2d26e4c
+    m_Address: Tank Resources
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9e010fde6272a914f8e230207fe56288
+    m_Address: Border
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 621bf010aba60a94b9ffc147f5289593
+    m_Address: Bullet
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 019ff99f31390fb46b1d1fe369821234
+    m_Address: Yellow Player Tank
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 19f45cbed4914d74fb94b76f768773c6, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: aecaf2a86c0f85f41a4a23b2bafca103, type: 2}
+    - {fileID: 11400000, guid: 9bd5495ebc9663c488e05a65a6e12ada, type: 2}

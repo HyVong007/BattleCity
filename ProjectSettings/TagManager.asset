@@ -11,10 +11,10 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
+  - Terrain
+  - Tank
+  - Bullet
+  - Item
   - 
   - 
   - 
@@ -40,4 +40,16 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Tank
+    uniqueID: 70059221
+    locked: 0
+  - name: Bullet
+    uniqueID: 862715641
+    locked: 0
+  - name: Forest
+    uniqueID: 3112970885
+    locked: 0
+  - name: Item
+    uniqueID: 4171159577
     locked: 0

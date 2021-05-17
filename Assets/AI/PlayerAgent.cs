@@ -1,7 +1,7 @@
 ﻿
 namespace BattleCity.AI
 {
-	public sealed class PlayerAgent : TankAgent
+	public sealed class PlayerAgent : Agent
 	{
 
 	}

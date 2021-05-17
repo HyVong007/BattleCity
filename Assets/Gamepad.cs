@@ -22,14 +22,11 @@ namespace BattleCity
 
 
 
-
-
-
 	public static class Gamepad
 	{
 		public enum ButtonState
 		{
-			PRESS, HOLD, RELEASE
+			Press, Hold, Release
 		}
 
 

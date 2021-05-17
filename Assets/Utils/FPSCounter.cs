@@ -1,30 +1,27 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 
 namespace BattleCity.Utils
 {
-	public sealed class FPSCounter : MonoBehaviour
+	internal sealed class FPSCounter : MonoBehaviour
 	{
-		[SerializeField] private float LOW_FPS_LIMIT = 50, VERY_LOW_FPS_LIMIT = 40;
-
-		private static FPSCounter instance;
-		private float deltaTime = 0.0f;
-
-
-		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+#if DEBUG
+		//[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+#endif
 		private static void Init()
 		{
-			//DontDestroyOnLoad(Instantiate(Extensions.Load<FPSCounter>()));
-			SceneManager.activeSceneChanged += (Scene before, Scene active) => instance.enabled = active.name == "BattleField";
+			DontDestroyOnLoad("FPS Counter".Instantiate());
+			SceneManager.activeSceneChanged += (before, active) => instance.enabled = active.name == "BattleField";
 		}
 
 
+		private static FPSCounter instance;
 		private void Awake()
 		{
-			if (instance) throw new Exception();
-			instance = this;
+			if (transform.position.x < 0) return; // Fix Addressable bug 1334039
+			instance = instance ? throw new Exception() : this;
 			name = "FPS Counter";
 			guiStyle.alignment = TextAnchor.UpperLeft;
 			guiStyle.fontSize = Screen.height * 2 / 50;
@@ -33,7 +30,8 @@ namespace BattleCity.Utils
 
 		private readonly Rect guiRect = new Rect(0, 0, Screen.width, Screen.height * 2 / 100);
 		private readonly GUIStyle guiStyle = new GUIStyle();
-
+		private float deltaTime;
+		[SerializeField] private float LOW_FPS_LIMIT = 50, VERY_LOW_FPS_LIMIT = 40;
 		private void OnGUI()
 		{
 			float fps = 1.0f / deltaTime;
