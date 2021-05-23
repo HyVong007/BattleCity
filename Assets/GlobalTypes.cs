@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
@@ -42,6 +41,9 @@ namespace BattleCity
 
 
 		#region Convert
+		/// <summary>
+		/// z = 0
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector3Int ToVector3Int(this in Vector2Int value) => new Vector3Int(value.x, value.y, 0);
 
@@ -51,30 +53,20 @@ namespace BattleCity
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2 ToVector2(this in Vector3Int value) => new Vector2(value.x, value.y);
 
+		/// <summary>
+		/// z = 0
+		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector3 ToVector3(this in Vector2Int value) => new Vector3(value.x, value.y);
 
-
-#if !DEBUG
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
-		public static Vector2Int ToVector2Int(this in Vector3 value) =>
-#if DEBUG
-				value.x < 0 || value.y < 0 ? throw new IndexOutOfRangeException($"value= {value} phải là tọa độ không âm !") :
-#endif
-			new Vector2Int((int)value.x, (int)value.y);
+		public static Vector2Int ToVector2Int(this in Vector3 value) => new Vector2Int((int)value.x, (int)value.y);
 
 		/// <summary>
 		/// z = 0
 		/// </summary>
-#if !DEBUG
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
-		public static Vector3Int ToVector3Int(this in Vector3 value) =>
-#if DEBUG
-				value.x < 0 || value.y < 0 ? throw new IndexOutOfRangeException($"value= {value} phải là tọa độ không âm !") :
-#endif
-new Vector3Int((int)value.x, (int)value.y, 0);
+		public static Vector3Int ToVector3Int(this in Vector3 value) => new Vector3Int((int)value.x, (int)value.y, 0);
 		#endregion
 
 
@@ -301,25 +293,24 @@ new Vector3Int((int)value.x, (int)value.y, 0);
 		}
 
 
-		/// <summary>
-		/// Di chuyển một bước 0.5f theo <paramref name="direction"/><br/>
-		/// Chú ý: Không bao giờ throw <see cref="OperationCanceledException"/>, nên kiểm tra <paramref name="token"/> độc lập !
-		/// </summary>
-		public static async UniTask Move(this Transform transform, Direction direction, float speed, int delay, CancellationToken token = default)
+		public static void ThrowIfInvalid(this Vector3 position)
 		{
-			var v = direction.ToUnitVector3();
-			var pos = transform.position;
-			var stop = pos + v * 0.5f;
-			v *= speed;
+			position *= 2;
+			if (position.ToVector3Int() != position) throw new Exception($"{position / 2:0.000000} không phải dạng 0.5*N với N nguyên không âm !");
+		}
 
-			for (float i = 0.5f / speed; i > 0; --i)
-			{
-				transform.position = pos += v;
-				await UniTask.Delay(delay, delayTiming: PlayerLoopTiming.LastUpdate);
-				if (token.IsCancellationRequested) return;
-			}
 
-			if (!token.IsCancellationRequested) transform.position = stop;
+		public static bool ContainsValue<T>(this T[] array, T item) where T : struct
+		{
+			for (int i = 0; i < array.Length; ++i) if (array[i].Equals(item)) return true;
+			return false;
+		}
+
+
+		public static bool Contains<T>(this T[] array, T item) where T : class
+		{
+			for (int i = 0; i < array.Length; ++i) if (array[i] == item) return true;
+			return false;
 		}
 	}
 
@@ -357,9 +348,9 @@ new Vector3Int((int)value.x, (int)value.y, 0);
 			T item;
 			if (free.Count != 0)
 			{
-				(item = free[0]).transform.position = position;
+				(item = free[free.Count - 1]).transform.position = position;
 				item.transform.SetParent(usingAnchor, false);
-				free.RemoveAt(0);
+				free.RemoveAt(free.Count - 1);
 			}
 			else item = UnityEngine.Object.Instantiate(prefab, position, Quaternion.identity, usingAnchor);
 
@@ -411,6 +402,72 @@ new Vector3Int((int)value.x, (int)value.y, 0);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public IEnumerator<T> GetEnumerator() => @using.GetEnumerator();
+	}
+
+
+
+	public sealed class SystemObjectPool<T> : IEnumerable<T> where T : class, new()
+	{
+		private readonly List<T> free = new List<T>(), @using = new List<T>();
+		private readonly Action<T> clean;
+
+
+		public SystemObjectPool(Action<T> clean)
+		{
+			if (typeof(UnityEngine.Object).IsAssignableFrom(typeof(T)))
+				throw new InvalidOperationException($"Không thể tạo SystemObjectPool<{typeof(T)}> bởi vì {typeof(T)} là UnityEngine.Object. Nên dùng {typeof(ObjectPool<Component>)} !");
+			this.clean = clean;
+		}
+
+
+		public T Get()
+		{
+			T item;
+			if (free.Count != 0)
+			{
+				item = free[free.Count - 1];
+				free.RemoveAt(free.Count - 1);
+			}
+			else item = new T();
+			@using.Add(item);
+			return item;
+		}
+
+
+		public void Recycle(T item)
+		{
+			clean(item);
+			@using.Remove(item);
+			free.Add(item);
+		}
+
+
+		public void Recycle()
+		{
+			for (int i = 0; i < @using.Count; ++i)
+			{
+				var item = @using[i];
+				clean(item);
+				free.Add(item);
+			}
+			@using.Clear();
+		}
+
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void GC(T item) => @using.Remove(item);
+
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void GC() => @using.Clear();
+
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public IEnumerator<T> GetEnumerator() => @using.GetEnumerator();
+
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		IEnumerator IEnumerable.GetEnumerator() => @using.GetEnumerator();
 	}
 
 

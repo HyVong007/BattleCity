@@ -1,28 +1,13 @@
-using Cysharp.Threading.Tasks;
+using BattleCity;
+using BattleCity.Tanks;
+using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 
 public class Test : MonoBehaviour
 {
-	public Vector3 v;
-
-	private async void Move()
+	private void Awake()
 	{
-		var pos = transform.position;
-		while (true)
-		{
-			transform.position += v;
-
-			await UniTask.Yield();
-		}
-	}
-
-
-	private void Update()
-	{
-		if (Keyboard.current.spaceKey.wasPressedThisFrame) Move();
+		
 	}
 }
-
-

@@ -1,4 +1,5 @@
 ﻿using BattleCity.Items;
+using BattleCity.Platforms;
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
@@ -21,16 +22,20 @@ namespace BattleCity.Tanks
 		private static void Init()
 		{
 			resources = "Tank Resources".Load<TankResources>();
+
+			var pool = new SystemObjectPool<List<Tank>>(list => list.Clear());
 			BattleField.awake += () =>
 			  {
-				  var size = BattleField.map.size;
-				  size.x += 2; size.y += 2;
+				  var size = "MAP".GetValue<Map>().size;
+				  size.x = size.x * 2 + 4;
+				  size.y = size.y * 2 + 4;
 				  var _array = new List<Tank>[size.x][];
 				  var a = new ReadOnlyArray<IReadOnlyList<Tank>>[size.x];
+				  pool.Recycle();
 				  for (int x = 0; x < size.x; ++x)
 				  {
 					  a[x] = new ReadOnlyArray<IReadOnlyList<Tank>>(_array[x] = new List<Tank>[size.y]);
-					  for (int y = 0; y < size.y; ++y) _array[x][y] = new List<Tank>();
+					  for (int y = 0; y < size.y; ++y) _array[x][y] = pool.Get();
 				  }
 				  array = new ReadOnlyArray<ReadOnlyArray<IReadOnlyList<Tank>>>(a);
 			  };
@@ -38,79 +43,191 @@ namespace BattleCity.Tanks
 
 
 		#region Move
-		public abstract Direction turretDirection { get; protected set; }
+		public abstract Direction direction { get; protected set; }
+		[SerializeField] protected float moveSpeed;
+		[SerializeField] private int delayMoving;
+		private Vector2Int index;
+		private bool isMoving;
 
-		private Direction? currentMoveDirection;
-		public Direction? moveDirection
+
+		public async UniTask Move(Direction direction, int step)
 		{
-			get => currentMoveDirection;
+#if DEBUG
+			if (step <= 0) throw new ArgumentOutOfRangeException($"step = {step} không hợp lệ !");
+#endif
+			var token = Token;
+			this.direction = direction;
+			var vi = direction.ToUnitVector3().ToVector2Int();
+			float lastMoveSpeed = moveSpeed;
+			var v = direction.ToUnitVector3() * lastMoveSpeed;
+			float moveCount = 0.5f / lastMoveSpeed;
 
-			set
+			int s = 0;
+			while (true)
 			{
-				if (value != turretDirection)
+				(array[index.x][index.y] as List<Tank>).Remove(this);
+				index += vi;
+				(array[index.x][index.y] as List<Tank>).Add(this);
+
+				for (float m = moveCount; m > 0; --m)
 				{
-					turretDirection = value != null ? value.Value : turretDirection;
-					return;
+					transform.position += v;
+					isMoving = true;
+					await UniTask.Delay(delayMoving);
+					/*if (this)*/
+					isMoving = false;
+					if (token.IsCancellationRequested) return;
+				}
+#if DEBUG
+				if (this.direction != direction)
+					throw new InvalidOperationException($"Tank.direction thay đổi khi đang Move. direction ={this.direction}");
+#endif
+				transform.position = new Vector3(index.x * 0.5f, index.y * 0.5f);
+				while (shootRequest > 0)
+				{
+					--shootRequest;
+					shootResults.Enqueue(movingBullets.Count < MAX_MOVING_BULLETS ? _Shoot() : null);
 				}
 
-				currentMoveDirection = value;
-				if (!moveTask.isRunning()) moveTask = Move();
+				#region Kiểm tra va chạm Item
+
+				#endregion
+
+				#region Kiểm tra va chạm Platform : ITankCollison
+
+				#endregion
+
+				if (++s == step || !canMove) break;
+				moveCount = moveSpeed != lastMoveSpeed ? 0.5f / (lastMoveSpeed = moveSpeed) : moveCount;
 			}
 		}
 
 
-		[SerializeField] protected float moveSpeed;
-		[SerializeField] protected int delayMoving;
-		private UniTask moveTask;
-		private async UniTask Move()
-		{
-			var token = Token;
-			var d = currentMoveDirection;
-			var v = d.ToUnitVector3() * moveSpeed;
+		public bool canMove => CanMove(transform.position, direction, ship);
 
-			while (true)
+
+		private static readonly List<Platform> tmpPlatforms = new List<Platform>();
+		public static bool CanMove(Vector3 position, Direction direction, bool hasShip)
+		{
+#if DEBUG
+			position.ThrowIfInvalid();
+#endif
+			#region Kiểm tra va chạm Platform
+			var index = position.ToVector2Int();
+			Platform p;
+			tmpPlatforms.Clear();
+			switch (direction)
 			{
-				currentMoveDirection = null;
-				await transform.Move(d.Value, moveSpeed, delayMoving, token);
-				if (token.IsCancellationRequested || currentMoveDirection == null) break;
-				v = currentMoveDirection != d ? (d = currentMoveDirection).ToUnitVector3() * moveSpeed : v;
+				case Direction.Up:
+					{
+						int y = (index.y == position.y) ? index.y : index.y + 1;
+						if (p = Platform.array[index.x][y]) tmpPlatforms.Add(p);
+						if (index.x == position.x && (p = Platform.array[index.x - 1][y])) tmpPlatforms.Add(p);
+					}
+					break;
+
+				case Direction.Right:
+					{
+						int x = (index.x == position.x) ? index.x : index.x + 1;
+						if (p = Platform.array[x][index.y]) tmpPlatforms.Add(p);
+						if (index.y == position.y && (p = Platform.array[x][index.y - 1])) tmpPlatforms.Add(p);
+					}
+					break;
+
+				case Direction.Down:
+					{
+						if (p = Platform.array[index.x][index.y - 1]) tmpPlatforms.Add(p);
+						if (index.x == position.x && (p = Platform.array[index.x - 1][index.y - 1])) tmpPlatforms.Add(p);
+					}
+					break;
+
+				case Direction.Left:
+					{
+						if (p = Platform.array[index.x - 1][index.y]) tmpPlatforms.Add(p);
+						if (index.y == position.y && (p = Platform.array[index.x - 1][index.y - 1])) tmpPlatforms.Add(p);
+					}
+					break;
 			}
+
+			if (tmpPlatforms.Count != 0)
+				foreach (var platform in tmpPlatforms)
+					if (platform.IsBlockingTankMove(position, direction, hasShip)) return false;
+			#endregion
+
+			#region Kiểm tra va chạm Tank
+			var tankIndex = (position * 2).ToVector2Int(); ;
+			if (direction == Direction.Up || direction == Direction.Down)
+			{
+				int y = tankIndex.y + (direction == Direction.Up ? 2 : -2);
+				if (array[tankIndex.x - 1][y].Count != 0
+					|| array[tankIndex.x][y].Count != 0
+					|| array[tankIndex.x + 1][y].Count != 0) return false;
+			}
+			else
+			{
+				int x = tankIndex.x + (direction == Direction.Right ? 2 : -2);
+				if (array[x][tankIndex.y - 1].Count != 0
+					|| array[x][tankIndex.y].Count != 0
+					|| array[x][tankIndex.y + 1].Count != 0) return false;
+			}
+			#endregion
+
+			return true;
 		}
 		#endregion
 
 
 		#region Shoot
-		protected int delayShooting;
-		protected byte MAX_MOVING_BULLETS = 1;
+		[SerializeField] protected int delayShooting;
+		[SerializeField] protected int MAX_MOVING_BULLETS = 1;
 		private readonly List<Bullet> movingBullets = new List<Bullet>();
-		private int shootTaskCount;
+		private int shootRequest;
+		private readonly Queue<Bullet> shootResults = new Queue<Bullet>();
 
-		public int canShootBullets => MAX_MOVING_BULLETS - movingBullets.Count - shootTaskCount;
+
+		public int canShootBullets => MAX_MOVING_BULLETS - movingBullets.Count - shootRequest;
 
 
 		public async UniTask<Bullet> Shoot()
 		{
-			++shootTaskCount;
-			using var cts = CancellationTokenSource.CreateLinkedTokenSource(Token, BattleField.Token);
-			if (await UniTask.Delay(delayShooting, cancellationToken: cts.Token).SuppressCancellationThrow()
+			++shootRequest;
+			var token = Token;
+			if (await UniTask.Delay(delayShooting, cancellationToken: token).SuppressCancellationThrow()
 				|| movingBullets.Count == MAX_MOVING_BULLETS)
 			{
-				--shootTaskCount;
+				--shootRequest;
 				return null;
 			}
 
+			if (!isMoving)
+			{
+				--shootRequest;
+				return _Shoot();
+			}
+
+			await UniTask.WaitWhile(() => isMoving);
+			if (token.IsCancellationRequested) return null;
+			return shootResults.Dequeue();
+		}
+
+
+		private Bullet _Shoot()
+		{
+#if DEBUG
+			transform.position.ThrowIfInvalid();
+#endif
 			var data = new Bullet.Data
 			{
-				// ...............
+				position = transform.position + direction.ToUnitVector3() * 0.5f,
+				direction = direction,
+				movingBullets = movingBullets
 			};
-
-			AddBulletSpecialInfo(ref data);
-			--shootTaskCount;
+			ExportSpecificBulletData(ref data);
 			return Bullet.Spawn(data);
 		}
 
 
-		protected abstract void AddBulletSpecialInfo(ref Bullet.Data data);
+		protected abstract void ExportSpecificBulletData(ref Bullet.Data data);
 		#endregion
 
 
@@ -120,7 +237,7 @@ namespace BattleCity.Tanks
 		{
 			if (transform.position.x < 0) return; // Fix Addressable bug 1334039
 			ΔcancelSource = CancellationTokenSource.CreateLinkedTokenSource(BattleField.Token);
-			var index = transform.position.ToVector2Int();
+			index = (transform.position * 2).ToVector2Int();
 #if DEBUG
 			if ((array[index.x][index.y] as List<Tank>).Contains(this))
 				throw new Exception($"Không thể add Tank ! {transform.position} đang tồn tại this tank !");
@@ -137,7 +254,6 @@ namespace BattleCity.Tanks
 			ΔcancelSource.Cancel();
 			ΔcancelSource.Dispose();
 			ΔcancelSource = null;
-			var index = transform.position.ToVector2Int();
 			(array[index.x][index.y] as List<Tank>).Remove(this);
 		}
 

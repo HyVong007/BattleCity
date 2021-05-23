@@ -2,6 +2,9 @@
 using Cysharp.Threading.Tasks;
 using RotaryHeart.Lib.SerializableDictionary;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -41,9 +44,13 @@ namespace BattleCity.Tanks
 		}
 
 
-		protected override void AddBulletSpecialInfo(ref Bullet.Data data)
+		protected override void ExportSpecificBulletData(ref Bullet.Data data)
 		{
-			throw new NotImplementedException();
+			data.owner = Bullet.Owner.Enemy;
+
+			// Test
+			data.speed = BattleField.instance.bulletSpeed;
+			data.canDestroySteel = data.canBurnForest = true;
 		}
 
 
@@ -58,24 +65,41 @@ namespace BattleCity.Tanks
 		}
 
 
+		private readonly struct Enumerable : IEnumerable<EnemyTank>
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public IEnumerator<EnemyTank> GetEnumerator() => ΔcurrentEnemies.GetEnumerator();
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			IEnumerator IEnumerable.GetEnumerator() => ΔcurrentEnemies.GetEnumerator();
+		}
+		private static readonly List<EnemyTank> ΔcurrentEnemies = new List<EnemyTank>();
+
+
+		/// <summary>
+		/// Không nên cache <see cref="currentEnemies"/> thay vào đó nên clone<br/>
+		/// Bởi vì cache sẽ không hợp lệ nữa nếu tương lai có <see cref="EnemyTank"/> bị chết hoặc sinh thêm.
+		/// </summary>
+		public static IEnumerable<EnemyTank> currentEnemies => new Enumerable();
 		private new void OnEnable()
 		{
 			if (transform.position.x < 0) return; // Fix Addressable bug 1334039
 
 			base.OnEnable();
-			turretDirection = Direction.Down;
+			direction = Direction.Down;
+			ΔcurrentEnemies.Add(this);
 		}
 
 
 		private new void OnDisable()
 		{
+			ΔcurrentEnemies.Remove(this);
 			base.OnDisable();
 		}
 
 
 		public override void Explode()
 		{
-			throw new NotImplementedException();
 		}
 
 
@@ -84,7 +108,9 @@ namespace BattleCity.Tanks
 
 			// Test
 
-			pool.Recycle(this);
+			//pool.Recycle(this);
+
+			if (bullet.owner == Bullet.Owner.Enemy) return false;
 			return true;
 		}
 
@@ -102,14 +128,13 @@ namespace BattleCity.Tanks
 		private Type Δtype;
 		public Type type
 		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => Δtype;
 
 			private set
 			{
 				if (isActiveAndEnabled) throw new InvalidOperationException("Khi Enemy đang sống thì không thể set type !");
 				Δtype = value;
-				spriteRenderer.sprite = sprites[value][color][turretDirection];
+				spriteRenderer.sprite = sprites[value][color][direction];
 
 				//var stat = Extensions.Load<GlobalAsset>().enemyStat;
 				//moveSpeed = stat.moveSpeed[value];
@@ -121,27 +146,25 @@ namespace BattleCity.Tanks
 		private Color Δcolor;
 		public override Color color
 		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => Δcolor;
 
 			set
 			{
 				Δcolor = value;
-				spriteRenderer.sprite = weapon == Weapon.Gun ? resources.gunSprites[value][turretDirection] : sprites[type][value][turretDirection];
+				spriteRenderer.sprite = weapon == Weapon.Gun ? resources.gunSprites[value][direction] : sprites[type][value][direction];
 				if (ship) ship.ChangeColor(value);
 			}
 		}
 
 
-		private Direction ΔturretDirection;
-		public override Direction turretDirection
+		private Direction Δdirection;
+		public override Direction direction
 		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => ΔturretDirection;
+			get => Δdirection;
 
 			protected set
 			{
-				ΔturretDirection = value;
+				Δdirection = value;
 				spriteRenderer.sprite = weapon == Weapon.Gun ? resources.gunSprites[color][value] : sprites[type][color][value];
 			}
 		}
@@ -154,7 +177,6 @@ namespace BattleCity.Tanks
 		private Weapon Δweapon;
 		public Weapon weapon
 		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => Δweapon;
 
 			set
@@ -172,7 +194,7 @@ namespace BattleCity.Tanks
 						goto case Weapon.Normal;
 
 					case Weapon.Normal:
-						spriteRenderer.sprite = value == Weapon.Gun ? resources.gunSprites[color][turretDirection] : sprites[type][color][turretDirection];
+						spriteRenderer.sprite = value == Weapon.Gun ? resources.gunSprites[color][direction] : sprites[type][color][direction];
 						break;
 				}
 
@@ -194,16 +216,15 @@ namespace BattleCity.Tanks
 		private static int shipCount;
 		private Ship Δship;
 		/// <summary>
-		/// Nếu Enemy đang sống thì sẽ kiểm tra thay đổi <see cref="shipCount"/>
+		/// Nếu <see cref="EnemyTank"/> đang sống thì sẽ kiểm tra thay đổi <see cref="shipCount"/>
 		/// </summary>
 		public override Ship ship
 		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => Δship;
 
 			set
 			{
-				shipCount += isActiveAndEnabled && (Δship ^ value) ? (value ? 1 : -1) : 0;
+				shipCount += enabled && (Δship ^ value) ? (value ? 1 : -1) : 0;
 				if (Δship && (!value || value != Δship)) Destroy(Δship.gameObject);
 				Δship = value;
 			}

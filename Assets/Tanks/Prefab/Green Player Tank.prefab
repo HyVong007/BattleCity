@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -1902080539138042878}
   - component: {fileID: -206594517057496529}
   m_Layer: 7
-  m_Name: Player Tank
+  m_Name: Green Player Tank
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,8 +45,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e726b50be414354ebcf974986bc38b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 0.05
+  moveSpeed: 0.25
   delayMoving: 15
+  delayShooting: 50
+  MAX_MOVING_BULLETS: 10
   spriteRenderer: {fileID: -1902080539138042878}
   animator: {fileID: -206594517057496529}
   sprites:
@@ -56,7 +58,7 @@ MonoBehaviour:
       draggable: 1
       expandable: 1
       multipleSelection: 1
-      isExpanded: 1
+      isExpanded: 0
       label:
         m_Text: Keys
         m_Image: {fileID: 0}
@@ -599,7 +601,7 @@ MonoBehaviour:
         - {fileID: 9100000, guid: 3aaef9e82c8a33649893783b13f3cb04, type: 2}
         - {fileID: 9100000, guid: 054aa39917f8e824f968dcb80c131956, type: 2}
         - {fileID: 9100000, guid: 7d995b2db785608458a84cadb4e50341, type: 2}
-  "\u0394color": 0
+  "\u0394color": 1
 --- !u!212 &-1902080539138042878
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -641,7 +643,7 @@ SpriteRenderer:
   m_SortingLayerID: 70059221
   m_SortingLayer: 1
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 7520bca94fb25e74eb31cfa64865b420, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 21955655cec024a468f16df874c7ac47, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

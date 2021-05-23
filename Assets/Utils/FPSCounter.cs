@@ -1,19 +1,18 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 
 namespace BattleCity.Utils
 {
-	internal sealed class FPSCounter : MonoBehaviour
+	public sealed class FPSCounter : MonoBehaviour
 	{
 #if DEBUG
-		//[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
 #endif
 		private static void Init()
 		{
 			DontDestroyOnLoad("FPS Counter".Instantiate());
-			SceneManager.activeSceneChanged += (before, active) => instance.enabled = active.name == "BattleField";
+			Application.quitting += () => quitting = true;
 		}
 
 
@@ -23,14 +22,22 @@ namespace BattleCity.Utils
 			if (transform.position.x < 0) return; // Fix Addressable bug 1334039
 			instance = instance ? throw new Exception() : this;
 			name = "FPS Counter";
+			transform.position = default;
 			guiStyle.alignment = TextAnchor.UpperLeft;
-			guiStyle.fontSize = Screen.height * 2 / 50;
+			guiStyle.fontSize = Screen.height * 2 / 100;
 		}
 
 
-		private readonly Rect guiRect = new Rect(0, 0, Screen.width, Screen.height * 2 / 100);
-		private readonly GUIStyle guiStyle = new GUIStyle();
-		private float deltaTime;
+		private static bool quitting;
+		private void OnDisable()
+		{
+			if (!quitting) throw new InvalidOperationException("FPS Counter nếu có thì sẽ tồn tại xuyên suốt game, không thể xóa hay ẩn !");
+		}
+
+
+		private static readonly Rect guiRect = new Rect(0, 0, Screen.width, Screen.height * 2 / 100);
+		private static readonly GUIStyle guiStyle = new GUIStyle();
+		private static float deltaTime;
 		[SerializeField] private float LOW_FPS_LIMIT = 50, VERY_LOW_FPS_LIMIT = 40;
 		private void OnGUI()
 		{

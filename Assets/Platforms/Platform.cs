@@ -1,5 +1,6 @@
 ﻿using BattleCity.Tanks;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -15,7 +16,7 @@ namespace BattleCity.Platforms
 		{
 			BattleField.awake += () =>
 			{
-				var size = BattleField.map.size;
+				var size = "MAP".GetValue<Map>().size;
 				size.x += 2; size.y += 2;
 				_array = new Platform[size.x][];
 				var a = new ReadOnlyArray<Platform>[size.x];
@@ -69,7 +70,7 @@ namespace BattleCity.Platforms
 		}
 
 
-		public abstract bool IsBlockingTankMove(/*pos, direction, hasShip*/);
+		public abstract bool IsBlockingTankMove(in Vector3 tankPosition, Direction tankDirection, bool tankHasShip);
 
 
 		public abstract bool OnCollision(Bullet bullet);
@@ -99,10 +100,85 @@ namespace BattleCity.Platforms
 				{
 					foreach (var column in columns)
 						foreach (var obj in column.objs)
-							if (obj) return false;
+							if (obj && obj.activeSelf) return false;
 					return true;
 				}
 			}
+
+
+			public bool Destroy(int x, int y)
+			{
+				if (this[x, y] && this[x, y].activeSelf)
+				{
+					this[x, y].SetActive(false);
+					UnityEngine.Object.Destroy(this[x, y]);
+					this[x, y] = null;
+					return true;
+				}
+				return false;
+			}
+		}
+
+
+		protected static class Bullet_Platform_Relatives
+		{
+			public static readonly Vector2 A = new Vector2(0, 0), B = new Vector2(0.5f, 0), C = new Vector2(1, 0),
+				D = new Vector2(0, 0.5f), E = new Vector2(0.5f, 0.5f), F = new Vector2(1, 0.5f),
+				G = new Vector2(0, 1), H = new Vector2(0.5f, 1), I = new Vector2(1, 1);
+		}
+
+
+		/// <summary>
+		/// Dùng cho platform có 4 particle !
+		/// </summary>
+		/// <param name="relative">Tọa độ tương đối của <see cref="Bullet"/> đối với <see cref="Platform"/></param>
+		protected static void FindBulletCollisionObjs(in Vector2 relative, in ParticleArray particles, List<GameObject> objs)
+		{
+			objs.Clear();
+			if (relative == Bullet_Platform_Relatives.A)
+			{
+				if (particles[0, 0]) objs.Add(particles[0, 0]);
+			}
+			else if (relative == Bullet_Platform_Relatives.B)
+			{
+				if (particles[0, 0]) objs.Add(particles[0, 0]);
+				if (particles[1, 0]) objs.Add(particles[1, 0]);
+			}
+			else if (relative == Bullet_Platform_Relatives.C)
+			{
+				if (particles[1, 0]) objs.Add(particles[1, 0]);
+			}
+			else if (relative == Bullet_Platform_Relatives.D)
+			{
+				if (particles[0, 0]) objs.Add(particles[0, 0]);
+				if (particles[0, 1]) objs.Add(particles[0, 1]);
+			}
+			else if (relative == Bullet_Platform_Relatives.E)
+			{
+				if (particles[0, 0]) objs.Add(particles[0, 0]);
+				if (particles[0, 1]) objs.Add(particles[0, 1]);
+				if (particles[1, 0]) objs.Add(particles[1, 0]);
+				if (particles[1, 1]) objs.Add(particles[1, 1]);
+			}
+			else if (relative == Bullet_Platform_Relatives.F)
+			{
+				if (particles[1, 0]) objs.Add(particles[1, 0]);
+				if (particles[1, 1]) objs.Add(particles[1, 1]);
+			}
+			else if (relative == Bullet_Platform_Relatives.G)
+			{
+				if (particles[0, 1]) objs.Add(particles[0, 1]);
+			}
+			else if (relative == Bullet_Platform_Relatives.H)
+			{
+				if (particles[0, 1]) objs.Add(particles[0, 1]);
+				if (particles[1, 1]) objs.Add(particles[1, 1]);
+			}
+			else if (relative == Bullet_Platform_Relatives.I)
+			{
+				if (particles[1, 1]) objs.Add(particles[1, 1]);
+			}
+			else throw new Exception();
 		}
 	}
 }

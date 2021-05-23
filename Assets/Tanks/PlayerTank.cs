@@ -13,30 +13,37 @@ namespace BattleCity.Tanks
 {
 	public sealed class PlayerTank : Tank, IGamepadListener
 	{
-		public static async UniTask<PlayerTank> Spawn(Color color, Vector3 position, byte? star = null)
+		#region Spawn
+		private static readonly IReadOnlyDictionary<Color, PlayerTank> players = new Dictionary<Color, PlayerTank>();
+		public static async UniTask<PlayerTank> Spawn(Color color, Vector3 position, int? star = null)
 		{
 			// await Effect
 			// Kiểm tra & chỉnh sửa lifes
 
 			PlayerTank tank = players.TryGetValue(color, out tank) ? tank
 				: $"{color} Player Tank".Instantiate<PlayerTank>(position, Quaternion.identity);
+
 			tank.star = star != null ? star.Value : tank.star;
 			tank.gameObject.SetActive(true);
 			return tank;
 		}
 
 
-		#region Shoot
-		protected override void AddBulletSpecialInfo(ref Bullet.Data data)
-		{
-			throw new NotImplementedException();
-		}
-
-
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static PlayerTank GetInstance(Color color) => players.ContainsKey(color) ? players[color] : null;
 		#endregion
 
 
-		private static readonly IReadOnlyDictionary<Color, PlayerTank> players = new Dictionary<Color, PlayerTank>();
+		protected override void ExportSpecificBulletData(ref Bullet.Data data)
+		{
+			data.owner = (Bullet.Owner)(int)color;
+
+			// Test
+			data.speed = BattleField.instance.bulletSpeed;
+			data.canDestroySteel = data.canBurnForest = true;
+		}
+
+
 		private void Awake()
 		{
 			if (transform.position.x < 0) return; // Fix Addressable bug 1334039
@@ -57,59 +64,44 @@ namespace BattleCity.Tanks
 		{
 			if (transform.position.x < 0) return; // Fix Addressable bug 1334039
 			base.OnEnable();
-			turretDirection = Direction.Up;
+			direction = Direction.Up;
+			if (!BattleField.instance.finish && "SETTING".GetValue<Setting>().humanPlayerColors.ContainsValue(color))
+				Gamepad.GetInstance(color).Add(this);
 		}
 
 
 		private new void OnDisable()
 		{
+			if (Gamepad.GetInstance(color).Contains(this)) Gamepad.GetInstance(color).Remove(this);
 			base.OnDisable();
 		}
 
 
 		public override bool OnCollision(Bullet bullet)
 		{
-			throw new System.NotImplementedException();
+			if ((int)bullet.owner == (int)color) return false;
+			return true;
 		}
 
 
 		public override void Explode()
 		{
-			throw new NotImplementedException();
+
 		}
 
 
 		#region Gamepad Listener
-		private void Update()
-		{
-			var k = Keyboard.current;
-			var press = k.leftArrowKey.wasPressedThisFrame ? Direction.Left
-				: k.rightArrowKey.wasPressedThisFrame ? Direction.Right
-				: k.upArrowKey.wasPressedThisFrame ? Direction.Up
-				: k.downArrowKey.wasPressedThisFrame ? Direction.Down
-				: (Direction?)null;
-
-			var hold = k.leftArrowKey.isPressed ? Direction.Left
-				: k.rightArrowKey.isPressed ? Direction.Right
-				: k.upArrowKey.isPressed ? Direction.Up
-				: k.downArrowKey.isPressed ? Direction.Down
-				: (Direction?)null;
-
-			var release = k.leftArrowKey.wasReleasedThisFrame ? Direction.Left
-				: k.rightArrowKey.wasReleasedThisFrame ? Direction.Right
-				: k.upArrowKey.wasReleasedThisFrame ? Direction.Up
-				: k.downArrowKey.wasReleasedThisFrame ? Direction.Down
-				: (Direction?)null;
-
-			if (press != null) OnDpad(press.Value, Gamepad.ButtonState.Press);
-			else if (release != null) OnDpad(release.Value, Gamepad.ButtonState.Release);
-			else if (hold != null) OnDpad(hold.Value, Gamepad.ButtonState.Hold);
-		}
-
-
+		private UniTask moveTask;
 		public void OnDpad(Direction direction, Gamepad.ButtonState state)
 		{
-			if (state != Gamepad.ButtonState.Release) moveDirection = direction;
+			if (moveTask.isRunning()) return;
+			if (this.direction != direction)
+			{
+				this.direction = direction;
+				return;
+			}
+
+			if (canMove) (moveTask = Move(direction, 1)).Forget();
 		}
 
 
@@ -153,21 +145,19 @@ namespace BattleCity.Tanks
 		[Label("Color")] [SerializeField] private Color Δcolor;
 		public override Color color
 		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => Δcolor;
 			set => throw new InvalidOperationException();
 		}
 
 
-		private Direction ΔturretDirection;
-		public override Direction turretDirection
+		private Direction Δdirection;
+		public override Direction direction
 		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => ΔturretDirection;
+			get => Δdirection;
 
 			protected set
 			{
-				ΔturretDirection = value;
+				Δdirection = value;
 				spriteRenderer.sprite = star == 3 ? resources.gunSprites[color][value] : sprites[star][color][value];
 			}
 		}

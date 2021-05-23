@@ -37,6 +37,14 @@ MonoBehaviour:
     m_Address: Yellow Player Tank
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: d29492f93da293c43ab9d199fb204502
+    m_Address: Player Agent
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3c26c01a83bb472478a46eb3c3049c0b
+    m_Address: Green Player Tank
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 19f45cbed4914d74fb94b76f768773c6, type: 2}
   m_SchemaSet:
