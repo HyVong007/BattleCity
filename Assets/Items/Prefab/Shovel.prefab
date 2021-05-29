@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 9134277137587671771}
   - component: {fileID: 5882243479907984801}
   - component: {fileID: 9134277137587671770}
+  - component: {fileID: -8563514921491599233}
   m_Layer: 9
   m_Name: Shovel
   m_TagString: Untagged
@@ -44,6 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e6727fe55b5c974fbc55804d7aa4854, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyDelaySeconds: 5
+  playerDelaySeconds: 5
 --- !u!212 &9134277137587671770
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -96,3 +99,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &-8563514921491599233
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9134277137587671769}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 06b50fdac241bcf45acad72f866f8256, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

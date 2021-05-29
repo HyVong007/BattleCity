@@ -253,25 +253,22 @@ namespace BattleCity
 			=> Addressables.InstantiateAsync(assetAddress, Vector3.zero, Quaternion.identity, parent).WaitForCompletion().GetComponent<T>();
 
 
-		// Bug: chỉ load được ScriptableObject (đã test)
-		// Error nếu load Mono
+		// Bug với LoadAssetAsync<T> tương tự InstantiateAsync
+		// T tạm thời chỉ nhận GameObject (bug)
 
 
-		/// <summary>
-		///  Bug: chỉ load được ScriptableObject (đã test)<br/>
-		///  Error nếu load Mono
-		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static UnityEngine.Object Load(this string assetAddress)
-			=> Addressables.LoadAssetAsync<UnityEngine.Object>(assetAddress).WaitForCompletion();
+		public static GameObject Load(this string assetAddress)
+			=> Addressables.LoadAssetAsync<GameObject>(assetAddress).WaitForCompletion();
 
 
-		/// <summary>
-		///  Bug: chỉ load được ScriptableObject (đã test)<br/>
-		///  Error nếu load Mono
-		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static T Load<T>(this string assetAddress) where T : UnityEngine.Object
+		public static T Load<T>(this string assetAddress) where T : Component
+			=> Addressables.LoadAssetAsync<GameObject>(assetAddress).WaitForCompletion().GetComponent<T>();
+
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static T LoadAsset<T>(this string assetAddress) where T : UnityEngine.Object
 			=> Addressables.LoadAssetAsync<T>(assetAddress).WaitForCompletion();
 		#endregion
 
@@ -300,7 +297,7 @@ namespace BattleCity
 		}
 
 
-		public static bool ContainsValue<T>(this T[] array, T item) where T : struct
+		public static bool ContainsValue<T>(this T[] array, in T item) where T : struct
 		{
 			for (int i = 0; i < array.Length; ++i) if (array[i].Equals(item)) return true;
 			return false;
@@ -358,6 +355,9 @@ namespace BattleCity
 			item.gameObject.SetActive(active);
 			return item;
 		}
+
+
+		public int usingCount => @using.Count;
 
 
 		public void Recycle(T item)
@@ -472,12 +472,15 @@ namespace BattleCity
 
 
 
-	public readonly struct ReadOnlyArray<T> : IEnumerable<T>
+	[Serializable]
+	public struct ReadOnlyArray<T> : IEnumerable<T>
 	{
-		private readonly T[] array;
+		[SerializeField] private T[] array;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public ReadOnlyArray(T[] array) => this.array = array;
+
+		public ReadOnlyArray(in ReadOnlyArray<T> wrapper) => array = wrapper.array.Clone() as T[];
 
 		public T this[int index] => array[index];
 
@@ -486,8 +489,14 @@ namespace BattleCity
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public IEnumerator<T> GetEnumerator() => (array as IEnumerable<T>).GetEnumerator();
 
-
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		IEnumerator IEnumerable.GetEnumerator() => array.GetEnumerator();
+
+
+		public bool Contains(in T item)
+		{
+			for (int i = 0; i < array.Length; ++i) if (array[i].Equals(item)) return true;
+			return false;
+		}
 	}
 }

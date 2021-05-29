@@ -16,7 +16,7 @@ namespace BattleCity.Platforms
 		{
 			BattleField.awake += () =>
 			{
-				var size = "MAP".GetValue<Map>().size;
+				var size = BattleField.stage.size;
 				size.x += 2; size.y += 2;
 				_array = new Platform[size.x][];
 				var a = new ReadOnlyArray<Platform>[size.x];
@@ -28,13 +28,13 @@ namespace BattleCity.Platforms
 				// Create Border
 				for (int x = 0, YMAX = size.y - 1; x < size.x; ++x)
 				{
-					"Border".Instantiate(new Vector3(x, 0), Quaternion.identity);
-					"Border".Instantiate(new Vector3(x, YMAX), Quaternion.identity);
+					Instantiate(PlatformPrefabs.instance.border, new Vector3(x, 0), Quaternion.identity);
+					Instantiate(PlatformPrefabs.instance.border, new Vector3(x, YMAX), Quaternion.identity);
 				}
 				for (int y = size.y - 2, XMAX = size.x - 1; y > 0; --y)
 				{
-					"Border".Instantiate(new Vector3(0, y), Quaternion.identity);
-					"Border".Instantiate(new Vector3(XMAX, y), Quaternion.identity);
+					Instantiate(PlatformPrefabs.instance.border, new Vector3(0, y), Quaternion.identity);
+					Instantiate(PlatformPrefabs.instance.border, new Vector3(XMAX, y), Quaternion.identity);
 				}
 			};
 		}

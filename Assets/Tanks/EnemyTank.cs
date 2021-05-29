@@ -1,10 +1,10 @@
-﻿using BattleCity.Items;
+﻿using BattleCity.AI;
+using BattleCity.Items;
 using Cysharp.Threading.Tasks;
 using RotaryHeart.Lib.SerializableDictionary;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -17,30 +17,31 @@ namespace BattleCity.Tanks
 		private static void Init()
 		{
 			BattleField.awake += () =>
-			  {
-				  // Fix bug Addressables 1334114
-				  var prefab = BattleField.instance.enemyTankAnchor.GetChild(0).GetComponent<EnemyTank>();
-				  pool = new ObjectPool<EnemyTank>(prefab, BattleField.instance.enemyTankAnchor, BattleField.instance.enemyTankAnchor);
-			  };
+			 {
+				 var prefab = "Enemy Tank".Load<EnemyTank>();
+				 prefab.gameObject.SetActive(false);
+				 pool = new ObjectPool<EnemyTank>(prefab, BattleField.instance.enemyTankAnchor, BattleField.instance.enemyTankAnchor);
+			 };
 		}
 
 
 		private static ObjectPool<EnemyTank> pool;
 		public static async UniTask<EnemyTank> Spawn(Type type, Color color, Vector3 position)
 		{
-			// await Effect
-			// Kiểm tra & chỉnh sửa lifes
+			// anim spawn
+			if (await UniTask.Delay(500, cancellationToken: BattleField.Token).SuppressCancellationThrow() || lifes[type] == 0) return null;
 
-			var tank = pool.Get(position, false);
-			tank.type = type;
-			tank.color = color;
+			--lifes[type];
+			var enemy = pool.Get(position, false);
+			enemy.type = type;
+			enemy.color = color;
 			if (shipCount > 0)
 			{
 				--shipCount;
-				nameof(Item.Name.Ship).Instantiate<Ship>().OnCollision(tank);
+				nameof(Item.Name.Ship).Instantiate<Ship>().OnCollision(enemy);
 			}
-			tank.gameObject.SetActive(true);
-			return tank;
+			enemy.gameObject.SetActive(true);
+			return enemy;
 		}
 
 
@@ -49,68 +50,81 @@ namespace BattleCity.Tanks
 			data.owner = Bullet.Owner.Enemy;
 
 			// Test
-			data.speed = BattleField.instance.bulletSpeed;
+			data.speed = 0.05f;
 			data.canDestroySteel = data.canBurnForest = true;
 		}
 
 
-		private void Awake()
-		{
-			if (transform.position.x < 0) return; // Fix Addressable bug 1334039
-
-			lifes.valueChanged += type =>
-			  {
-
-			  };
-		}
-
-
-		private readonly struct Enumerable : IEnumerable<EnemyTank>
+		public struct Enumerable : IEnumerable<EnemyTank>
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public IEnumerator<EnemyTank> GetEnumerator() => ΔcurrentEnemies.GetEnumerator();
+			public IEnumerator<EnemyTank> GetEnumerator() => pool.GetEnumerator();
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			IEnumerator IEnumerable.GetEnumerator() => ΔcurrentEnemies.GetEnumerator();
+			IEnumerator IEnumerable.GetEnumerator() => pool.GetEnumerator();
 		}
-		private static readonly List<EnemyTank> ΔcurrentEnemies = new List<EnemyTank>();
 
 
 		/// <summary>
-		/// Không nên cache <see cref="currentEnemies"/> thay vào đó nên clone<br/>
-		/// Bởi vì cache sẽ không hợp lệ nữa nếu tương lai có <see cref="EnemyTank"/> bị chết hoặc sinh thêm.
+		/// Sử dụng ngay hoặc clone. Không nên cache.<br/>
+		/// Nên clone trước khi sinh thêm hoặc gây nổ <see cref="EnemyTank"/> 
 		/// </summary>
-		public static IEnumerable<EnemyTank> currentEnemies => new Enumerable();
+		public static IEnumerable<EnemyTank> livingTanks => new Enumerable();
+		public static int livingTankCount => pool.usingCount;
 		private new void OnEnable()
 		{
 			if (transform.position.x < 0) return; // Fix Addressable bug 1334039
-
 			base.OnEnable();
 			direction = Direction.Down;
-			ΔcurrentEnemies.Add(this);
 		}
 
 
 		private new void OnDisable()
 		{
-			ΔcurrentEnemies.Remove(this);
 			base.OnDisable();
+			weapon = Weapon.Normal;
 		}
 
 
 		public override void Explode()
 		{
+			// anim big explosion
+			// sound enemy explosion
+
+			pool.Recycle(this);
+			foreach (int life in lifes.Values)
+				if (life != 0)
+				{
+					EnemyAgent.SpawnTank().Forget();
+					return;
+				}
+
+			if (pool.usingCount == 0)
+			{
+				// remove sound enemy exist
+				BattleField.instance.Finish();
+			}
 		}
 
 
 		public override bool OnCollision(Bullet bullet)
 		{
-
-			// Test
-
-			//pool.Recycle(this);
-
 			if (bullet.owner == Bullet.Owner.Enemy) return false;
+			var originalColor = color;
+
+			// Cập nhật color, color HP
+			// Nếu enemy còn sống thì anim small explosion, sound bullet collise alive tank
+			// Nếu enemy bị nổ và không phải Gun -> tăng điểm
+			// Nếu enemy nổ thì phá thuyền nếu có
+
+
+
+			ship = null; // Test
+			Explode();  // Test
+
+
+
+			if (originalColor == Color.Red) Item.RandomSpawn();
 			return true;
 		}
 
@@ -216,7 +230,8 @@ namespace BattleCity.Tanks
 		private static int shipCount;
 		private Ship Δship;
 		/// <summary>
-		/// Nếu <see cref="EnemyTank"/> đang sống thì sẽ kiểm tra thay đổi <see cref="shipCount"/>
+		/// Nếu <see cref="EnemyTank"/> đang sống thì sẽ kiểm tra thay đổi <see cref="shipCount"/><br/>
+		/// Gán = <see langword="null"/> sẽ phá hủy thuyền (nếu có)
 		/// </summary>
 		public override Ship ship
 		{

@@ -32,8 +32,6 @@ MonoBehaviour:
     - com.cysharp.unitask
     - com.openupm
     - com.yasirkula.ingamedebugconsole
-    - jillejr.newtonsoft.json-for-unity
-    - jillejr.newtonsoft.json-for-unity.converters
     m_IsDefault: 0
     m_Capabilities: 0
   m_UserSelectedRegistryName: package.openupm.com
@@ -48,8 +46,6 @@ MonoBehaviour:
       - com.cysharp.unitask
       - com.openupm
       - com.yasirkula.ingamedebugconsole
-      - jillejr.newtonsoft.json-for-unity
-      - jillejr.newtonsoft.json-for-unity.converters
       m_IsDefault: 0
       m_Capabilities: 0
     m_Modified: 0
@@ -59,7 +55,5 @@ MonoBehaviour:
     - com.cysharp.unitask
     - com.openupm
     - com.yasirkula.ingamedebugconsole
-    - jillejr.newtonsoft.json-for-unity
-    - jillejr.newtonsoft.json-for-unity.converters
     m_SelectedScopeIndex: 0
   m_LoadAssets: 0

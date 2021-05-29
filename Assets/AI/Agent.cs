@@ -55,9 +55,14 @@ namespace BattleCity.AI
 		protected void Awake()
 		{
 			if (transform.position.x < 0) return; // Fix Addressable bug 1334039
+			transform.position = default;
 			var type = GetType();
 			type_agent[type] = type_agent.ContainsKey(type) && type_agent[type] ?
 				throw new Exception($"Với mỗi Agent type chỉ tồn tại tối đa 1 Agent. Type= {type}") : this;
 		}
+
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static T GetInstance<T>() where T : Agent => type_agent.ContainsKey(typeof(T)) ? type_agent[typeof(T)] as T : null;
 	}
 }

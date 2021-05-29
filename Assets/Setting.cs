@@ -1,12 +1,8 @@
-﻿using BattleCity.Tanks;
-using System;
-
-
-namespace BattleCity
+﻿namespace BattleCity
 {
-	[Serializable]
-	public struct Setting
+	public static class Setting
 	{
-		public Tank.Color[] humanPlayerColors, aiPlayerColors;
+		public static bool enemy_CanCollise_Item = true, playerBullet_CanCollise_Player = true;
+		public static int defaultPlayerStar, playerBullet_FreezePlayer_Milisec = 5000;
 	}
 }

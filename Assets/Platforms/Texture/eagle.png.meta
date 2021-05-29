@@ -4,10 +4,10 @@ TextureImporter:
   internalIDToNameTable:
   - first:
       213: -8963772635242594009
-    second: eagle_0
+    second: live
   - first:
       213: 3339101539683590651
-    second: eagle_1
+    second: dead
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -133,7 +133,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: eagle_0
+      name: live
       rect:
         serializedVersion: 2
         x: 46
@@ -154,7 +154,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: eagle_1
+      name: dead
       rect:
         serializedVersion: 2
         x: 153

@@ -1,38 +1,39 @@
 ﻿using BattleCity.Tanks;
-using Cysharp.Threading.Tasks;
-using System.Collections.Generic;
-using UnityEngine;
+using System;
 
 
 namespace BattleCity.AI
 {
 	public sealed class PlayerAgent : Agent
 	{
-		private static readonly IReadOnlyList<PlayerTank> aiPlayers = new List<PlayerTank>();
-		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-		private static void Init()
+		public static ReadOnlyArray<Tank.Color> colors { get; private set; } = new ReadOnlyArray<Tank.Color>(Array.Empty<Tank.Color>());
+		private new void Awake()
 		{
-			var aiPlayers = PlayerAgent.aiPlayers as List<PlayerTank>;
-			BattleField.awake += async () =>
-			  {
-				  var setting = "SETTING".GetValue<Setting>();
-				  if (setting.aiPlayerColors == null || setting.aiPlayerColors.Length == 0) return;
+			base.Awake();
+			colors = new ReadOnlyArray<Tank.Color>(BattleField.instance.aiPlayerColors);
+		}
 
-				  var agent = "Player Agent".Instantiate<PlayerAgent>(BattleField.instance.transform);
-				  await UniTask.Yield();
-				  foreach (var color in setting.aiPlayerColors) aiPlayers.Add(await PlayerTank.Spawn(color, new Vector3(1.5f, 1.5f)));
-			  };
+
+		private void OnDestroy()
+		{
+			colors = new ReadOnlyArray<Tank.Color>(Array.Empty<Tank.Color>());
 		}
 
 
 		private void FixedUpdate()
 		{
-			foreach (var player in aiPlayers)
+			foreach (var player in PlayerTank.livingTanks)
 			{
-				if (!player.enabled) continue;
-				if (!IsTankMoving(player)) CheckMove(player);
+				if (!colors.Contains(player.color)) continue;
 				CheckShoot(player);
+				if (!player.isFreeze && !IsTankMoving(player)) CheckMove(player);
 			}
+		}
+
+
+		public static void DecideBorrowingLife(Tank.Color color)
+		{
+
 		}
 	}
 }

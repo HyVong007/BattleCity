@@ -77,7 +77,7 @@ namespace BattleCity.Tanks
 #if !DEBUG
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-			public List<Bullet> GetList(in Vector3 position, Direction direction)
+			private List<Bullet> GetList(in Vector3 position, Direction direction)
 			{
 #if DEBUG
 				float _ = direction == Direction.Up || direction == Direction.Down ? position.x * 2 : position.y * 2;
@@ -93,10 +93,10 @@ namespace BattleCity.Tanks
 		{
 			BattleField.awake += () =>
 			  {
-				  array = new Array("MAP".GetValue<Map>().size);
+				  array = new Array(BattleField.stage.size);
 
-				  // Fix bug Addressables 1334114
-				  var prefab = BattleField.instance.bulletAnchor.GetChild(0).GetComponent<Bullet>();
+				  var prefab = "Bullet".Load<Bullet>();
+				  prefab.gameObject.SetActive(false);
 				  pool = new ObjectPool<Bullet>(prefab, BattleField.instance.bulletAnchor, BattleField.instance.bulletAnchor);
 			  };
 		}
@@ -104,7 +104,6 @@ namespace BattleCity.Tanks
 
 
 		private static ObjectPool<Bullet> pool;
-		/// <returns>bullet có thể còn sống (bullet.isActiveAndEnabled==<see langword="true"/>) hoặc đã bị phá hủy (bullet.isActiveAndEnabled==<see langword="false"/>)</returns>
 		public static Bullet Spawn(in Data data)
 		{
 #if DEBUG
@@ -122,6 +121,7 @@ namespace BattleCity.Tanks
 		[SerializeField] private SerializableDictionaryBase<Direction, Sprite> sprites;
 		private void OnEnable()
 		{
+			if (transform.position.x < 0) return; // Fix Addressable bug 1334039
 #if DEBUG
 			if (data.movingBullets.Contains(this))
 				throw new Exception($"Tank.movingBullets đang chứa this. Không thể thêm {this}");
@@ -129,8 +129,7 @@ namespace BattleCity.Tanks
 			data.movingBullets.Add(this);
 			array.Add(this);
 			spriteRenderer.sprite = sprites[data.direction];
-			pos = transform.position;
-			pos05 = pos;
+			pos = pos05 = transform.position;
 			velocity = direction.ToUnitVector3();
 			v05 = velocity * 0.5f;
 			velocity *= data.speed;
@@ -312,7 +311,13 @@ namespace BattleCity.Tanks
 				for (int x = minX; x <= maxX; ++x)
 					for (int y = minY; y <= maxY; ++y)
 					{
-						var list = Tank.array[x][y];
+						IReadOnlyList<Tank> list = null;
+
+						try
+						{
+							list = Tank.array[x][y];
+						}
+						catch { print($"Loi ! index= {index:0.000000}, pos05= {pos05:0.000000}, pos= {pos:0.000000}, direction= {direction}"); throw; }
 						if (list.Count != 0) tmpTanks.Add(list[list.Count - 1]);
 					}
 
@@ -334,7 +339,7 @@ namespace BattleCity.Tanks
 
 		public bool OnCollision(Bullet bullet)
 		{
-			if (owner == Owner.Enemy && owner == bullet.owner) return false;
+			if (owner == Owner.Enemy && bullet.owner == Owner.Enemy) return false;
 			pool.Recycle(this);
 			return true;
 		}

@@ -38,29 +38,37 @@ namespace BattleCity
 
 		public void Add(IGamepadListener listener)
 		{
-			if (listeners.Contains(listener))
+			if (Contains(listener))
 				throw new InvalidOperationException($"Không thể thêm listener do Gamepad đang chứa listener. listener= {listener}");
-			listeners.Add(listener);
+			commands.Add((add: true, listener));
 		}
 
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Remove(IGamepadListener listener) => listeners.Remove(listener);
+		public void Remove(IGamepadListener listener) => commands.Add((add: false, listener));
 
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Contains(IGamepadListener listener) => listeners.Contains(listener);
+		public bool Contains(IGamepadListener listener)
+		{
+			if (listeners.Contains(listener)) return true;
+			if (commands.Count == 0) return false;
+			int count = 0;
+			foreach (var command in commands) count += command.listener != listener ? 0 : command.add ? 1 : -1;
+			return count > 0;
+		}
 
 
 		[SerializeField] private Tank.Color color;
-		private void Awake()
-			=> DontDestroyOnLoad(instances[color] = instances.ContainsKey(color) ? throw new Exception() : this);
+		private void Awake() => DontDestroyOnLoad(instances[color] = instances.ContainsKey(color) ? throw new Exception() : this);
 
 
 		private readonly List<IGamepadListener> listeners = new List<IGamepadListener>();
 		private void Update()
 		{
+			if (commands.Count != 0) ModifyListeners();
 			var k = Keyboard.current;
+
+			#region Dpad
 			var press = k.leftArrowKey.wasPressedThisFrame ? Direction.Left
 				: k.rightArrowKey.wasPressedThisFrame ? Direction.Right
 				: k.upArrowKey.wasPressedThisFrame ? Direction.Up
@@ -81,15 +89,39 @@ namespace BattleCity
 
 
 			// Test Yellow Gamepad
-			if (press != null) foreach (var listener in listeners) listener.OnDpad(press.Value, Gamepad.ButtonState.Press);
-			else if (release != null) foreach (var listener in listeners) listener.OnDpad(release.Value, Gamepad.ButtonState.Release);
-			else if (hold != null) foreach (var listener in listeners) listener.OnDpad(hold.Value, Gamepad.ButtonState.Hold);
+			if (press != null) foreach (var listener in listeners) listener.OnDpad(press.Value, ButtonState.Press);
+			else if (release != null) foreach (var listener in listeners) listener.OnDpad(release.Value, ButtonState.Release);
+			else if (hold != null) foreach (var listener in listeners) listener.OnDpad(hold.Value, ButtonState.Hold);
+			#endregion
+
+			#region Button
+			if (k.escapeKey.wasPressedThisFrame)
+			{
+				if (commands.Count != 0) ModifyListeners();
+				foreach (var listener in listeners) listener.OnButtonStart();
+			}
+
+			if (commands.Count != 0) ModifyListeners();
+			if (k.spaceKey.wasPressedThisFrame) foreach (var listener in listeners) listener.OnButtonA(ButtonState.Press);
+			else if (k.spaceKey.wasReleasedThisFrame) foreach (var listener in listeners) listener.OnButtonA(ButtonState.Release);
+			else if (k.spaceKey.isPressed) foreach (var listener in listeners) listener.OnButtonA(ButtonState.Hold);
+
+
+			#endregion
 		}
 
 
 		public enum ButtonState
 		{
 			Press, Hold, Release
+		}
+
+
+		private readonly List<(bool add, IGamepadListener listener)> commands = new List<(bool add, IGamepadListener listener)>();
+		private void ModifyListeners()
+		{
+			foreach (var (add, listener) in commands) if (add) listeners.Add(listener); else listeners.Remove(listener);
+			commands.Clear();
 		}
 	}
 }

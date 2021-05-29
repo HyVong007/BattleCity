@@ -44,6 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2af13ef1e4943cf48a0da12554839c62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyFreezeMilisec: 10000
+  playerFreezeMilisec: 5000
 --- !u!212 &7999257429362160082
 SpriteRenderer:
   m_ObjectHideFlags: 0

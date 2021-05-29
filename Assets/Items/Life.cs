@@ -7,7 +7,19 @@ namespace BattleCity.Items
 	{
 		public override void OnCollision(Tank tank)
 		{
-			throw new System.NotImplementedException();
+			if (tank is PlayerTank)
+			{
+				++PlayerTank.lifes[tank.color];
+				//Effect.Play(Effect.Sound.Life);
+			}
+			else UpgradeEnemyColorAndHP();
+			Destroy(gameObject);
+		}
+
+
+		public static void UpgradeEnemyColorAndHP()
+		{
+
 		}
 	}
 }

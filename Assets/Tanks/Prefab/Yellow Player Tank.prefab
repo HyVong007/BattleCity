@@ -45,12 +45,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e726b50be414354ebcf974986bc38b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 0.25
+  moveSpeed: 0.1
   delayMoving: 15
-  delayShooting: 50
-  MAX_MOVING_BULLETS: 10
+  delayShooting: 100
+  MAX_MOVING_BULLETS: 1
   spriteRenderer: {fileID: -1902080539138042878}
   animator: {fileID: -206594517057496529}
+  freezeMilisec: 0
+  flashAnim: {fileID: 9100000, guid: 06b50fdac241bcf45acad72f866f8256, type: 2}
   sprites:
     reorderableList:
       canAdd: 1

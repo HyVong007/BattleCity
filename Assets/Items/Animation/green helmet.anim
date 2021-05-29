@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: yellow active helmet
+  m_Name: green helmet
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -20,11 +20,9 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
-      value: {fileID: -7875162686457594567, guid: 41a02f3f95dff7843a446c76badc227d,
-        type: 3}
+      value: {fileID: -7074322789873762012, guid: fe48df0e685cc5c4d857b8e3081f2ea1, type: 3}
     - time: 0.083333336
-      value: {fileID: -44835696941361272, guid: 41a02f3f95dff7843a446c76badc227d,
-        type: 3}
+      value: {fileID: 1094968444014325470, guid: fe48df0e685cc5c4d857b8e3081f2ea1, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -44,8 +42,8 @@ AnimationClip:
       customType: 23
       isPPtrCurve: 1
     pptrCurveMapping:
-    - {fileID: -7875162686457594567, guid: 41a02f3f95dff7843a446c76badc227d, type: 3}
-    - {fileID: -44835696941361272, guid: 41a02f3f95dff7843a446c76badc227d, type: 3}
+    - {fileID: -7074322789873762012, guid: fe48df0e685cc5c4d857b8e3081f2ea1, type: 3}
+    - {fileID: 1094968444014325470, guid: fe48df0e685cc5c4d857b8e3081f2ea1, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}

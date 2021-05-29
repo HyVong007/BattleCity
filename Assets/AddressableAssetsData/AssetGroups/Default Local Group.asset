@@ -25,8 +25,8 @@ MonoBehaviour:
     m_Address: Tank Resources
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 9e010fde6272a914f8e230207fe56288
-    m_Address: Border
+  - m_GUID: 0225a056b70dea54591085f44f517bd5
+    m_Address: Platform Prefabs
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 621bf010aba60a94b9ffc147f5289593
@@ -43,6 +43,46 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: 3c26c01a83bb472478a46eb3c3049c0b
     m_Address: Green Player Tank
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 181323d186202de40acfd5c3f8ce8b65
+    m_Address: Clock
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6e00df83057dc69479c2a9477296acdb
+    m_Address: Grenade
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 0df4fcf8d1f580640be997e5c32add97
+    m_Address: Gun
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9ef3be73b6193d348a6564883545c1c0
+    m_Address: Helmet
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ef084b00d042c2e4fb4c008a086cd8b8
+    m_Address: Life
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 10c22953d8843864680316aade7c354a
+    m_Address: Ship
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d474665ec444efc48ad9c5c7c29f232c
+    m_Address: Shovel
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6b7eade513ff8fa4887c8ca78cc4dca7
+    m_Address: Star
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 284a0d71cd8ca8148a1fda1443a349ba
+    m_Address: Enemy Tank
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9e010fde6272a914f8e230207fe56288
+    m_Address: Border
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

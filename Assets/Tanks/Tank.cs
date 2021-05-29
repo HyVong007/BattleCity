@@ -21,12 +21,12 @@ namespace BattleCity.Tanks
 		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
 		private static void Init()
 		{
-			resources = "Tank Resources".Load<TankResources>();
+			resources = "Tank Resources".LoadAsset<TankResources>();
 
 			var pool = new SystemObjectPool<List<Tank>>(list => list.Clear());
 			BattleField.awake += () =>
 			  {
-				  var size = "MAP".GetValue<Map>().size;
+				  var size = BattleField.stage.size;
 				  size.x = size.x * 2 + 4;
 				  size.y = size.y * 2 + 4;
 				  var _array = new List<Tank>[size.x][];
@@ -47,7 +47,6 @@ namespace BattleCity.Tanks
 		[SerializeField] protected float moveSpeed;
 		[SerializeField] private int delayMoving;
 		private Vector2Int index;
-		private bool isMoving;
 
 
 		public async UniTask Move(Direction direction, int step)
@@ -72,25 +71,20 @@ namespace BattleCity.Tanks
 				for (float m = moveCount; m > 0; --m)
 				{
 					transform.position += v;
-					isMoving = true;
-					await UniTask.Delay(delayMoving);
-					/*if (this)*/
-					isMoving = false;
-					if (token.IsCancellationRequested) return;
+					await UniTask.Delay(delayMoving, cancellationToken: token);
 				}
 #if DEBUG
 				if (this.direction != direction)
 					throw new InvalidOperationException($"Tank.direction thay đổi khi đang Move. direction ={this.direction}");
 #endif
 				transform.position = new Vector3(index.x * 0.5f, index.y * 0.5f);
-				while (shootRequest > 0)
-				{
-					--shootRequest;
-					shootResults.Enqueue(movingBullets.Count < MAX_MOVING_BULLETS ? _Shoot() : null);
-				}
 
 				#region Kiểm tra va chạm Item
-
+				if ((Setting.enemy_CanCollise_Item || (this is PlayerTank))
+				&& Item.current && Item.current.IsCollidedTank(transform.position))
+				{
+					Item.current.OnCollision(this);
+				}
 				#endregion
 
 				#region Kiểm tra va chạm Platform : ITankCollison
@@ -107,7 +101,7 @@ namespace BattleCity.Tanks
 
 
 		private static readonly List<Platform> tmpPlatforms = new List<Platform>();
-		public static bool CanMove(Vector3 position, Direction direction, bool hasShip)
+		public static bool CanMove(in Vector3 position, Direction direction, bool hasShip)
 		{
 #if DEBUG
 			position.ThrowIfInvalid();
@@ -181,47 +175,31 @@ namespace BattleCity.Tanks
 		[SerializeField] protected int delayShooting;
 		[SerializeField] protected int MAX_MOVING_BULLETS = 1;
 		private readonly List<Bullet> movingBullets = new List<Bullet>();
-		private int shootRequest;
-		private readonly Queue<Bullet> shootResults = new Queue<Bullet>();
+		private int shootTaskCount;
 
 
-		public int canShootBullets => MAX_MOVING_BULLETS - movingBullets.Count - shootRequest;
+		public int canShootBullets => MAX_MOVING_BULLETS - movingBullets.Count - shootTaskCount;
 
 
 		public async UniTask<Bullet> Shoot()
 		{
-			++shootRequest;
-			var token = Token;
-			if (await UniTask.Delay(delayShooting, cancellationToken: token).SuppressCancellationThrow()
+			++shootTaskCount;
+			if (await UniTask.Delay(delayShooting, cancellationToken: Token).SuppressCancellationThrow()
 				|| movingBullets.Count == MAX_MOVING_BULLETS)
 			{
-				--shootRequest;
+				--shootTaskCount;
 				return null;
 			}
 
-			if (!isMoving)
-			{
-				--shootRequest;
-				return _Shoot();
-			}
-
-			await UniTask.WaitWhile(() => isMoving);
-			if (token.IsCancellationRequested) return null;
-			return shootResults.Dequeue();
-		}
-
-
-		private Bullet _Shoot()
-		{
-#if DEBUG
-			transform.position.ThrowIfInvalid();
-#endif
+			--shootTaskCount;
 			var data = new Bullet.Data
 			{
 				position = transform.position + direction.ToUnitVector3() * 0.5f,
 				direction = direction,
 				movingBullets = movingBullets
 			};
+			if (direction == Direction.Up || direction == Direction.Down) data.position.y = Mathf.Round(data.position.y * 2) * 0.5f;
+			else data.position.x = Mathf.Round(data.position.x * 2) * 0.5f;
 			ExportSpecificBulletData(ref data);
 			return Bullet.Spawn(data);
 		}
@@ -245,7 +223,11 @@ namespace BattleCity.Tanks
 			(array[index.x][index.y] as List<Tank>).Add(this);
 			movingBullets.Clear();
 
-			// kiểm tra va chạm item
+			if ((Setting.enemy_CanCollise_Item || (this is PlayerTank))
+				&& Item.current && Item.current.IsCollidedTank(transform.position))
+			{
+				Item.current.OnCollision(this);
+			}
 		}
 
 
@@ -304,8 +286,21 @@ namespace BattleCity.Tanks
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public IEnumerator<KeyValuePair<TKey, int>> GetEnumerator() => dict.GetEnumerator();
 
-
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		IEnumerator IEnumerable.GetEnumerator() => dict.GetEnumerator();
+
+		public Dictionary<TKey, int>.KeyCollection Keys => dict.Keys;
+
+		public Dictionary<TKey, int>.ValueCollection Values => dict.Values;
+
+
+		public bool hasLife
+		{
+			get
+			{
+				foreach (var key in dict.Keys) if (dict[key] != 0) return true;
+				return false;
+			}
+		}
 	}
 }
