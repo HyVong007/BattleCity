@@ -13,9 +13,37 @@ namespace BattleCity.Items
 		private static CancellationTokenSource cts;
 		private static float stopTime;
 		[SerializeField] private float enemyDelaySeconds, playerDelaySeconds;
+		/// <summary>
+		/// Các tọa độ <see cref="Platform"/> (không phải <see cref="Border"/>) bao quanh <see cref="Eagle"/><br/>
+		/// [Tọa độ platform] = direction trong prefab
+		/// </summary>
+		private static readonly IReadOnlyDictionary<Vector2Int, Vector2Int> index_prefabDir = new Dictionary<Vector2Int, Vector2Int>();
+		private static Vector3 lastEaglePosition;
+		private static Vector2Int lastStageSize;
+		private static readonly Vector2Int[] DIRECTIONS = new Vector2Int[]
+		{
+			Vector2Int.up, Vector2Int.right+Vector2Int.up, Vector2Int.right, Vector2Int.right+Vector2Int.down,
+			Vector2Int.down, Vector2Int.down+Vector2Int.left, Vector2Int.left, Vector2Int.left+Vector2Int.up
+		};
 		public override void OnCollision(Tank tank)
 		{
-			if (BattleField.stage.size != lastStageSize || Eagle.instance.transform.position != lastEaglePosition) UpdateSurroundIndexes();
+			#region Kiểm tra stage, cập nhật {index_prefabDir}
+			var size = "STAGE".GetValue<Stage>().size;
+			if (size != lastStageSize || Eagle.instance.transform.position != lastEaglePosition)
+			{
+				lastEaglePosition = Eagle.instance.transform.position;
+				lastStageSize = size;
+				var e = lastEaglePosition.ToVector2Int();
+				var dict = index_prefabDir as Dictionary<Vector2Int, Vector2Int>;
+				dict.Clear();
+				foreach (var dir in DIRECTIONS)
+				{
+					var index = e + dir;
+					if (!(Platform.array[index.x][index.y] is Border)) dict[index] = dir * -1;
+				}
+			}
+			#endregion
+
 			if (tank is PlayerTank)
 			{
 				if (enemyTask.isRunning())
@@ -86,39 +114,12 @@ namespace BattleCity.Items
 				var p = Platform.array[index.x][index.y];
 				if (p) Destroy(p.gameObject);
 			}
-			var token = BattleField.Token;
+			var token = cts.Token;
 			await UniTask.WaitUntil(() => token.IsCancellationRequested || Time.time > stopTime);
 			if (token.IsCancellationRequested) return;
 
 			foreach (var index_dir in index_prefabDir)
 				Instantiate(PlatformPrefabs.instance.bricks[index_dir.Value], index_dir.Key.ToVector3(), Quaternion.identity);
-		}
-
-
-		/// <summary>
-		/// Các tọa độ <see cref="Platform"/> (không phải <see cref="Border"/>) bao quanh <see cref="Eagle"/><br/>
-		/// [Tọa độ platform] = direction trong prefab
-		/// </summary>
-		private static readonly IReadOnlyDictionary<Vector2Int, Vector2Int> index_prefabDir = new Dictionary<Vector2Int, Vector2Int>();
-		private static Vector3 lastEaglePosition;
-		private static Vector2Int lastStageSize;
-		private static readonly Vector2Int[] DIRECTIONS = new Vector2Int[]
-		{
-			Vector2Int.up, Vector2Int.right+Vector2Int.up, Vector2Int.right, Vector2Int.right+Vector2Int.down,
-			Vector2Int.down, Vector2Int.down+Vector2Int.left, Vector2Int.left, Vector2Int.left+Vector2Int.up
-		};
-		private static void UpdateSurroundIndexes()
-		{
-			lastEaglePosition = Eagle.instance.transform.position;
-			lastStageSize = BattleField.stage.size;
-			var e = lastEaglePosition.ToVector2Int();
-			var dict = index_prefabDir as Dictionary<Vector2Int, Vector2Int>;
-			dict.Clear();
-			foreach (var dir in DIRECTIONS)
-			{
-				var index = e + dir;
-				if (!(Platform.array[index.x][index.y] is Border)) dict[index] = dir * -1;
-			}
 		}
 	}
 }

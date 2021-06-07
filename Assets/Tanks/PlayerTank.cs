@@ -70,7 +70,7 @@ namespace BattleCity.Tanks
 			get
 			{
 				tmp.Clear();
-				foreach (var color in players.Keys) if (players[color].enabled) tmp.Add(players[color]);
+				foreach (var player in players.Values) if (player.enabled) tmp.Add(player);
 				return tmp;
 			}
 		}
@@ -116,7 +116,7 @@ namespace BattleCity.Tanks
 			base.OnEnable();
 			isExploded = false;
 			direction = Direction.Up;
-			if (!BattleField.instance.finish && !PlayerAgent.colors.Contains(color)) Gamepad.GetInstance(color).Add(this);
+			if (!BattleField.instance.isGameOver && !PlayerAgent.colors.Contains(color)) Gamepad.GetInstance(color).Add(this);
 		}
 
 

@@ -20,7 +20,7 @@ namespace BattleCity.AI
 		private readonly Dictionary<Tank, UniTask> moveTasks = new Dictionary<Tank, UniTask>();
 		private readonly Dictionary<Tank, Direction> moveDirections = new Dictionary<Tank, Direction>();
 		private static readonly Direction[] DIRECTIONS = Enum.GetValues(typeof(Direction)) as Direction[];
-		protected void CheckMove(Tank tank)
+		protected async void CheckMove(Tank tank)
 		{
 			if (!rotateStopTimes.ContainsKey(tank)) rotateStopTimes[tank] = Time.time + UnityEngine.Random.Range(minDelayRotate, maxDelayRotate);
 			else if (Time.time >= rotateStopTimes[tank])
@@ -28,13 +28,19 @@ namespace BattleCity.AI
 				rotateStopTimes.Remove(tank);
 				moveDirections[tank] = DIRECTIONS[UnityEngine.Random.Range(0, DIRECTIONS.Length)];
 			}
+
 			var direction = moveDirections.ContainsKey(tank) ? moveDirections[tank] : tank.direction;
-			if (Tank.CanMove(tank.transform.position, direction, tank.ship)) (moveTasks[tank] = tank.Move(direction, 1)).Forget();
-			else
+			var token = tank.Token;
+			moveTasks[tank] = UniTask.Never(token);
+			while (!Tank.CanMove(tank.transform.position, direction, tank.ship))
 			{
-				rotateStopTimes.Remove(tank);
-				moveDirections[tank] = DIRECTIONS[UnityEngine.Random.Range(0, DIRECTIONS.Length)];
+				if (rotateStopTimes.ContainsKey(tank)) rotateStopTimes.Remove(tank);
+				direction = moveDirections[tank] = DIRECTIONS[UnityEngine.Random.Range(0, DIRECTIONS.Length)];
+				await UniTask.Yield();
+				if (token.IsCancellationRequested) return;
 			}
+
+			(moveTasks[tank] = tank.Move(direction, 1)).Forget();
 		}
 
 

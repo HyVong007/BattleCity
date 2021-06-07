@@ -26,7 +26,7 @@ namespace BattleCity.Tanks
 			var pool = new SystemObjectPool<List<Tank>>(list => list.Clear());
 			BattleField.awake += () =>
 			  {
-				  var size = BattleField.stage.size;
+				  var size = "STAGE".GetValue<Stage>().size;
 				  size.x = size.x * 2 + 4;
 				  size.y = size.y * 2 + 4;
 				  var _array = new List<Tank>[size.x][];

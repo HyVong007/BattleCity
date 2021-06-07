@@ -93,7 +93,7 @@ namespace BattleCity.Tanks
 		{
 			BattleField.awake += () =>
 			  {
-				  array = new Array(BattleField.stage.size);
+				  array = new Array("STAGE".GetValue<Stage>().size);
 
 				  var prefab = "Bullet".Load<Bullet>();
 				  prefab.gameObject.SetActive(false);

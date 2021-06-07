@@ -1,5 +1,4 @@
 ﻿using BattleCity.AI;
-using BattleCity.Items;
 using BattleCity.Platforms;
 using BattleCity.Tanks;
 using Cysharp.Threading.Tasks;
@@ -20,42 +19,31 @@ namespace BattleCity
 		public static BattleField instance { get; private set; }
 		private void Awake()
 		{
-			if (transform.position.x < 0) return; // Fix Addressable bug 1334039
 			instance = instance ? throw new Exception() : this;
 			ΔcancelSource = new CancellationTokenSource();
 			isPause = false;
-
-			stage = _stage;
-			var size = stage.size;
-#if DEBUG
-			if (size.x < 5 || size.x > 253 || size.y < 3 || size.y > 253)
-				throw new ArgumentOutOfRangeException("Kích thước map không hợp lệ !");
-#endif
-
-
-
 			awake?.Invoke();
 		}
 
 
-		private readonly Dictionary<Tank.Color, GamepadListener> gamepadListeners = new Dictionary<Tank.Color, GamepadListener>();
 		private async void Start()
 		{
+			Platform.ImportCurrentStage();
 			await UniTask.Yield();
 			foreach (var color in humanPlayerColors)
 				Gamepad.GetInstance(color).Add(gamepadListeners[color] = new GamepadListener(color));
 
 
 			// spawn enemy
-			foreach (EnemyTank.Type type in Enum.GetValues(typeof(EnemyTank.Type))) // Test
-				EnemyTank.lifes[type] = 1;
-
+			EnemyTank.lifes[EnemyTank.Type.Big] = 1;
 			EnemyAgent.SpawnTank().Forget();
 
 
 
 			// spawn player
-			foreach (var color in PlayerTank.PLAYER_COLORS) PlayerTank.lifes[color] = 1; // Test
+			PlayerTank.lifes[Tank.Color.Yellow] = 1; // Test
+			PlayerTank.lifes[Tank.Color.Green] = 1; // Test
+
 			if (aiPlayerColors.Length != 0) "Player Agent".Instantiate(transform);
 			foreach (var color in humanPlayerColors) PlayerTank.Spawn(color, false).Forget();
 			foreach (var color in aiPlayerColors) PlayerTank.Spawn(color, false).Forget();
@@ -67,6 +55,7 @@ namespace BattleCity
 			ΔcancelSource.Cancel();
 			ΔcancelSource.Dispose();
 			ΔcancelSource = null;
+			foreach (var color_listener in gamepadListeners) Gamepad.GetInstance(color_listener.Key).Remove(color_listener.Value);
 		}
 
 
@@ -74,10 +63,6 @@ namespace BattleCity
 		[field: SerializeField] public Transform enemyTankAnchor { get; private set; }
 		[field: SerializeField] public Transform bulletAnchor { get; private set; }
 
-		public static Stage stage { get; private set; }
-
-		// Test
-		[SerializeField] private Stage _stage;
 
 
 		// Test
@@ -90,11 +75,11 @@ namespace BattleCity
 
 
 		#region Finish
-		public bool finish { get; private set; }
-		private static readonly Tank.Color[] COLORS = Enum.GetValues(typeof(Tank.Color)) as Tank.Color[];
+		public bool isGameOver { get; private set; }
+
+
 		[SerializeField] private int delayEndingMilisec;
-
-
+		private bool isFinish;
 		/// <summary>
 		/// Trận chiến kết thúc trong các trường hợp:<para/> 
 		/// - <see cref="Eagle"/> chết (GameOver)<br/> 
@@ -103,34 +88,26 @@ namespace BattleCity
 		/// </summary>
 		public async void Finish()
 		{
-			if (finish) return;
-			finish = true;
+			if (isGameOver) return;
+			isGameOver = Eagle.instance.isDead || (!PlayerTank.lifes.hasLife && PlayerTank.livingTanks.Count == 0);
+			if (isGameOver)
+			{
+				foreach (var player in PlayerTank.livingTanks)
+					if (Gamepad.GetInstance(player.color).Contains(player)) Gamepad.GetInstance(player.color).Remove(player);
+				if (Agent.GetInstance<PlayerAgent>()) Agent.GetInstance<PlayerAgent>().enabled = false;
+			}
 
+			if (isFinish) return;
+			isFinish = true;
+			await UniTask.Delay(delayEndingMilisec);
 
-
-
-			//foreach (var color_listener in gamepadListeners)
-			//	Gamepad.GetInstance(color_listener.Key).Remove(color_listener.Value);
-			//foreach (var color in COLORS)
-			//{
-			//	var player = PlayerTank.GetLivingTank(color);
-			//	if (Gamepad.GetInstance(color).Contains(player)) Gamepad.GetInstance(color).Remove(player);
-			//}
-			//var playerAgent = Agent.GetInstance<PlayerAgent>();
-			//if (playerAgent) playerAgent.enabled = false;
-			//await UniTask.Delay(delayEndingMilisec);
-
-			//gameObject.SetActive(false);
-			//Agent.GetInstance<EnemyAgent>().enabled = false;
-
-			//if (Eagle.instance.isDead /* || PlayerTank chết hết mạng */)
-			//{
-			//	// GameOver
-			//}
+			Destroy(gameObject);
+			foreach (var player in PlayerTank.livingTanks) player.gameObject.SetActive(false);
 		}
 		#endregion
 
 
+		private readonly Dictionary<Tank.Color, GamepadListener> gamepadListeners = new Dictionary<Tank.Color, GamepadListener>();
 		public static bool isPause { get; private set; }
 		private sealed class GamepadListener : IGamepadListener
 		{

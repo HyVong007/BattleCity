@@ -29,7 +29,7 @@ namespace BattleCity.Platforms
 			if (isDead) return false;
 			spriteRenderer.sprite = dead;
 			// Eagle explode
-			// BattleField.instance.Finish();
+			BattleField.instance.Finish();
 			return true;
 		}
 	}

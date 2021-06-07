@@ -299,14 +299,14 @@ namespace BattleCity
 
 		public static bool ContainsValue<T>(this T[] array, in T item) where T : struct
 		{
-			for (int i = 0; i < array.Length; ++i) if (array[i].Equals(item)) return true;
+			for (int i = array.Length - 1; i > -1; --i) if (array[i].Equals(item)) return true;
 			return false;
 		}
 
 
 		public static bool Contains<T>(this T[] array, T item) where T : class
 		{
-			for (int i = 0; i < array.Length; ++i) if (array[i] == item) return true;
+			for (int i = array.Length - 1; i > -1; --i) if (array[i] == item) return true;
 			return false;
 		}
 	}

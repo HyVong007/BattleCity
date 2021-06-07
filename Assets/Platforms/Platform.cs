@@ -16,7 +16,7 @@ namespace BattleCity.Platforms
 		{
 			BattleField.awake += () =>
 			{
-				var size = BattleField.stage.size;
+				var size = "STAGE".GetValue<Stage>().size;
 				size.x += 2; size.y += 2;
 				_array = new Platform[size.x][];
 				var a = new ReadOnlyArray<Platform>[size.x];
@@ -179,6 +179,19 @@ namespace BattleCity.Platforms
 				if (particles[1, 1]) objs.Add(particles[1, 1]);
 			}
 			else throw new Exception();
+		}
+
+
+		public static void ImportCurrentStage()
+		{
+			var stage = "STAGE".GetValue<Stage>();
+			var size = stage.size;
+			for (int x = 0, id; x < size.x; ++x)
+				for (int y = 0; y < size.y; ++y)
+				{
+					if ((id = stage.platforms[x][y]) >= 0)
+						Instantiate(PlatformPrefabs.allPrefabs[id], new Vector3(x + 1, y + 1), Quaternion.identity);
+				}
 		}
 	}
 }
