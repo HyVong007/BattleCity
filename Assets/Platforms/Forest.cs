@@ -9,6 +9,8 @@ namespace BattleCity.Platforms
 		[SerializeField]
 		private Particle particle;
 
+		public override bool CanMove(Tank tank, Vector3 newDir) => true;
+
 
 		public override bool OnBulletCollision(Bullet bullet)
 		{

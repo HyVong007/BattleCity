@@ -41,3 +41,15 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Tank
+    uniqueID: 3223502663
+    locked: 0
+  - name: Bullet
+    uniqueID: 2675890119
+    locked: 0
+  - name: Forest
+    uniqueID: 2241793411
+    locked: 0
+  - name: Item
+    uniqueID: 3250447833
+    locked: 0

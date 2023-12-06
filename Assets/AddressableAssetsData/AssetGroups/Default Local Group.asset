@@ -1,0 +1,195 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Default Local Group
+  m_EditorClassIdentifier: 
+  m_GroupName: Default Local Group
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 6259085f32d73f148a7aced2ecb6188d
+  m_SerializeEntries:
+  - m_GUID: cb0756a11576d334c9c7ac52481c9526
+    m_Address: Assets/Items/Prefab/Bomb.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4e4dbdb098899564daf3445b015760b2
+    m_Address: Assets/Items/Prefab/Gun.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2a1cb250cddd44b4e8517ce898ca7604
+    m_Address: Assets/Items/Prefab/Shovel.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b87585c2ee7b26b408013b9933c63ff4
+    m_Address: Assets/Items/Prefab/Ship.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9ea4fbf3527038441aec571b4e5107d5
+    m_Address: Assets/Items/Prefab/Helmet.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 63174a8e5681d314b95ecd6ba3fe27a5
+    m_Address: Assets/Items/Prefab/Life.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 825e711fab002c7478a3cef487f22e56
+    m_Address: Assets/Items/Prefab/Clock.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a70ed861ddaeed444ad01a4c5d5b7947
+    m_Address: Assets/Items/Prefab/Star.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eecf185ef045a0d4699b70436e2b1ca7
+    m_Address: Assets/Platforms/Prefab/Steel left down.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 317898eeaacaa7943ae82debaea78f0b
+    m_Address: Assets/Platforms/Prefab/Steel up.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0c6104f12f142e0468ca6f3256bb1226
+    m_Address: Assets/Platforms/Prefab/Steel right up.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0b61b6430a925e04bb508d41e1b570b5
+    m_Address: Assets/Platforms/Prefab/Steel down.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2cfa0b1c46b464548b8636f9a6e478b2
+    m_Address: Assets/Platforms/Prefab/Steel right down.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c9eab8ec8e9b893448a99b4b3463313b
+    m_Address: Assets/Platforms/Prefab/Steel right.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f67733adf3d151347846d0d328b8b07a
+    m_Address: Assets/Platforms/Prefab/Steel left up.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 948bdfddc68cad3488e9691bec128ae6
+    m_Address: Assets/Tanks/Prefab/Bullet.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 80c0bf6820431274fae00a730d709176
+    m_Address: Assets/Tanks/Prefab/Player.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0fc68beed222dfb4ab99040044a962ed
+    m_Address: Assets/Tanks/Prefab/Enemy.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d0fed45e96f6f9849b862f38d5d59f6b
+    m_Address: Assets/Platforms/Prefab/Steel left.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8016298448e4de945a82f55f08f13c47
+    m_Address: Assets/Platforms/Prefab/Brick down.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 56be79e4916309d4ea770cf4350ff433
+    m_Address: Assets/Platforms/Prefab/Brick up.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ae40b6e65d8dcd44ab56da6debb6db6b
+    m_Address: Assets/Platforms/Prefab/Brick left down.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a4e63df6361aa234c8d6928cf486840c
+    m_Address: Assets/Platforms/Prefab/Brick left up.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0cacfcc0ecdbb8949afff41c9e6f2b87
+    m_Address: Assets/Platforms/Prefab/Brick left.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1c46205a58653144fa2ce564ccf9dca7
+    m_Address: Assets/Platforms/Prefab/Brick right down.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e92e2731aaa0dd34c9ebe94d2f07a7a1
+    m_Address: Assets/Platforms/Prefab/Brick right up.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bf50ce30c4b0081478f81f66ca40d487
+    m_Address: Assets/Platforms/Prefab/Brick right.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8a9631bc73e23764aaee5125ebd3fe30
+    m_Address: Assets/Platforms/Prefab/Water.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 91773f6f6fe65d941adf836be643abd7
+    m_Address: Assets/Platforms/Prefab/Steel full.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f2f02fbc51e15f946bd7948b5ae184cf
+    m_Address: Assets/Platforms/Prefab/Sand.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cd17d1b9184ccd6449f8542d953fe47d
+    m_Address: Assets/Platforms/Prefab/Forest.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 86d4e08acacc7a540a1a8611656aac7c
+    m_Address: Assets/Platforms/Prefab/Eagle.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ef319aaf44785ae409024ec1fef53c78
+    m_Address: Assets/Platforms/Prefab/Brick full.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c46e394cd5424d242932601fcf1c72d8
+    m_Address: Assets/Platforms/Prefab/Border.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: d042e30e95ff8d147be17bad2c670b19, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 09fff56248e50ae45bb21bfc422ef723, type: 2}
+    - {fileID: 11400000, guid: 77a18f31de2ccf14f9de80369e82c1a8, type: 2}

@@ -7,9 +7,9 @@ namespace BattleCity.Platforms
 	[RequireComponent(typeof(SpriteRenderer), typeof(Animator))]
 	public sealed class Water : Platform
 	{
-		public override bool OnBulletCollision(Bullet bullet)
-		{
-			throw new System.NotImplementedException();
-		}
+		public override bool CanMove(Tank tank, Vector3 newDir) => tank.hasShip;
+
+
+		public override bool OnBulletCollision(Bullet bullet) => false;
 	}
 }

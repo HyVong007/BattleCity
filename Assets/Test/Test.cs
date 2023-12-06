@@ -1,17 +1,20 @@
+using BattleCity;
+using BattleCity.LevelEditors;
+using BattleCity.Platforms;
 using UnityEngine;
 
 
 public class Test : MonoBehaviour
 {
-	// Start is called before the first frame update
-	void Start()
+	[SerializeField] private LevelEditor editor;
+	public Vector3 v;
+	private void Start()
 	{
-
-	}
-
-	// Update is called once per frame
-	void Update()
-	{
-
+		char x = 'A', y = 'B';
+		print((char)(x +y));
+		switch(x)
+		{
+			case (char)('A' + 'B'): return;
+		}
 	}
 }
