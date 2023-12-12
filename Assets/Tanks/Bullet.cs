@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 
 namespace BattleCity.Tanks
@@ -6,7 +7,7 @@ namespace BattleCity.Tanks
 	[RequireComponent(typeof(SpriteRenderer))]
 	public sealed class Bullet : MonoBehaviour, IBulletCollision
 	{
-		public static ReadOnlyArray<ReadOnlyArray<Bullet>> bullets { get; private set; }
+		private static List<Bullet>[] Xs, Ys;
 
 		public Color? color { get; private set; }
 
@@ -15,7 +16,26 @@ namespace BattleCity.Tanks
 		private float speed;
 
 
-		public bool OnBulletCollision(Bullet bullet)
+		static Bullet()
+		{
+			BattleField.onAwake += () =>
+			{
+				Xs = new List<Bullet>[BattleField.level.width * 2];
+				Ys = new List<Bullet>[BattleField.level.height * 2];
+				for (int x = 0; x < Xs.Length; ++x) Xs[x] = new();
+				for (int y = 0; y < Ys.Length; ++y) Ys[y] = new();
+			};
+		}
+
+
+
+
+
+
+
+
+
+		public bool OnCollision(Bullet bullet)
 		{
 			throw new System.NotImplementedException();
 		}
@@ -26,6 +46,6 @@ namespace BattleCity.Tanks
 	public interface IBulletCollision
 	{
 		/// <returns><see langword="true"/>: Bullet will be disappeared</returns>
-		bool OnBulletCollision(Bullet bullet);
+		bool OnCollision(Bullet bullet);
 	}
 }

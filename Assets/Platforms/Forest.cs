@@ -12,7 +12,7 @@ namespace BattleCity.Platforms
 		public override bool CanMove(Tank tank, Vector3 newDir) => true;
 
 
-		public override bool OnBulletCollision(Bullet bullet)
+		public override bool OnCollision(Bullet bullet)
 		{
 			throw new System.NotImplementedException();
 		}

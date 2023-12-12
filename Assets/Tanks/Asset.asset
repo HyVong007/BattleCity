@@ -1,0 +1,372 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df7cf04e3f8a1024496626372dd66c49, type: 3}
+  m_Name: Asset
+  m_EditorClassIdentifier: 
+  gunSprites:
+    reorderableList:
+      canAdd: 1
+      canRemove: 1
+      draggable: 1
+      expandable: 1
+      multipleSelection: 1
+      isExpanded: 0
+      label:
+        m_Text: Keys
+        m_Image: {fileID: 0}
+        m_Tooltip: 
+        m_TextWithWhitespace: "Keys\u200B"
+      headerHeight: 18
+      footerHeight: 13
+      slideEasing: 0.15
+      verticalSpacing: 2
+      showDefaultBackground: 1
+      elementDisplayType: 0
+      elementNameProperty: 
+      elementNameOverride: 
+      elementIcon: {fileID: 0}
+    reqReferences: {fileID: 0}
+    isExpanded: 0
+    _keyValues: 00000000010000000200000003000000
+    _keys: 00000000010000000200000003000000
+    _values:
+    - reorderableList:
+        canAdd: 1
+        canRemove: 1
+        draggable: 1
+        expandable: 1
+        multipleSelection: 1
+        isExpanded: 1
+        label:
+          m_Text: Keys
+          m_Image: {fileID: 0}
+          m_Tooltip: 
+          m_TextWithWhitespace: "Keys\u200B"
+        headerHeight: 18
+        footerHeight: 13
+        slideEasing: 0.15
+        verticalSpacing: 2
+        showDefaultBackground: 1
+        elementDisplayType: 0
+        elementNameProperty: 
+        elementNameOverride: 
+        elementIcon: {fileID: 0}
+      reqReferences: {fileID: 0}
+      isExpanded: 1
+      _keyValues:
+      - {x: 0, y: 1, z: 0}
+      - {x: 1, y: 0, z: 0}
+      - {x: 0, y: -1, z: 0}
+      - {x: -1, y: 0, z: 0}
+      _keys:
+      - {x: 0, y: 1, z: 0}
+      - {x: 1, y: 0, z: 0}
+      - {x: 0, y: -1, z: 0}
+      - {x: -1, y: 0, z: 0}
+      _values:
+      - {fileID: 21300000, guid: 30ad93231f9ca7b4dae21c6ad6289a7e, type: 3}
+      - {fileID: 21300000, guid: 241d90796819da34b9809072cb680a5a, type: 3}
+      - {fileID: 21300000, guid: dc03e9f13d8a36e438e723e05ccefcbd, type: 3}
+      - {fileID: 21300000, guid: f9cbfe5a42057314eb0a2e7b7c8682ce, type: 3}
+    - reorderableList:
+        canAdd: 1
+        canRemove: 1
+        draggable: 1
+        expandable: 1
+        multipleSelection: 1
+        isExpanded: 1
+        label:
+          m_Text: Keys
+          m_Image: {fileID: 0}
+          m_Tooltip: 
+          m_TextWithWhitespace: "Keys\u200B"
+        headerHeight: 18
+        footerHeight: 13
+        slideEasing: 0.15
+        verticalSpacing: 2
+        showDefaultBackground: 1
+        elementDisplayType: 0
+        elementNameProperty: 
+        elementNameOverride: 
+        elementIcon: {fileID: 0}
+      reqReferences: {fileID: 0}
+      isExpanded: 1
+      _keyValues:
+      - {x: 0, y: 1, z: 0}
+      - {x: 1, y: 0, z: 0}
+      - {x: 0, y: -1, z: 0}
+      - {x: -1, y: 0, z: 0}
+      _keys:
+      - {x: 0, y: 1, z: 0}
+      - {x: 1, y: 0, z: 0}
+      - {x: 0, y: -1, z: 0}
+      - {x: -1, y: 0, z: 0}
+      _values:
+      - {fileID: 21300000, guid: 0db6c070ec9aa104694105ddb1048258, type: 3}
+      - {fileID: 21300000, guid: b5d976c2b1f1e024fb05de7a5806e91c, type: 3}
+      - {fileID: 21300000, guid: be93e7d876dbd3d488ad43a4d00a1b1a, type: 3}
+      - {fileID: 21300000, guid: ce3a3c9c1d07a974a8ed3a95b2efa023, type: 3}
+    - reorderableList:
+        canAdd: 1
+        canRemove: 1
+        draggable: 1
+        expandable: 1
+        multipleSelection: 1
+        isExpanded: 1
+        label:
+          m_Text: Keys
+          m_Image: {fileID: 0}
+          m_Tooltip: 
+          m_TextWithWhitespace: "Keys\u200B"
+        headerHeight: 18
+        footerHeight: 13
+        slideEasing: 0.15
+        verticalSpacing: 2
+        showDefaultBackground: 1
+        elementDisplayType: 0
+        elementNameProperty: 
+        elementNameOverride: 
+        elementIcon: {fileID: 0}
+      reqReferences: {fileID: 0}
+      isExpanded: 1
+      _keyValues:
+      - {x: 0, y: 1, z: 0}
+      - {x: 1, y: 0, z: 0}
+      - {x: 0, y: -1, z: 0}
+      - {x: -1, y: 0, z: 0}
+      _keys:
+      - {x: 0, y: 1, z: 0}
+      - {x: 1, y: 0, z: 0}
+      - {x: 0, y: -1, z: 0}
+      - {x: -1, y: 0, z: 0}
+      _values:
+      - {fileID: 21300000, guid: b2848b77c4157fb4aa7e1b3c2b69ae01, type: 3}
+      - {fileID: 21300000, guid: eb10a5b96229e51479f3b0f1bd8b3349, type: 3}
+      - {fileID: 21300000, guid: b00401061f385f246a9cee6b69ccb86f, type: 3}
+      - {fileID: 21300000, guid: 9dc1279b66f0d3f4a819429d456b52c4, type: 3}
+    - reorderableList:
+        canAdd: 1
+        canRemove: 1
+        draggable: 1
+        expandable: 1
+        multipleSelection: 1
+        isExpanded: 1
+        label:
+          m_Text: Keys
+          m_Image: {fileID: 0}
+          m_Tooltip: 
+          m_TextWithWhitespace: "Keys\u200B"
+        headerHeight: 18
+        footerHeight: 13
+        slideEasing: 0.15
+        verticalSpacing: 2
+        showDefaultBackground: 1
+        elementDisplayType: 0
+        elementNameProperty: 
+        elementNameOverride: 
+        elementIcon: {fileID: 0}
+      reqReferences: {fileID: 0}
+      isExpanded: 1
+      _keyValues:
+      - {x: 0, y: 1, z: 0}
+      - {x: 1, y: 0, z: 0}
+      - {x: 0, y: -1, z: 0}
+      - {x: -1, y: 0, z: 0}
+      _keys:
+      - {x: 0, y: 1, z: 0}
+      - {x: 1, y: 0, z: 0}
+      - {x: 0, y: -1, z: 0}
+      - {x: -1, y: 0, z: 0}
+      _values:
+      - {fileID: 21300000, guid: a5a9180637a0ad44ea1551f33a3bdadf, type: 3}
+      - {fileID: 21300000, guid: 76b1355f25bba3e47b6bd319e3ad2d37, type: 3}
+      - {fileID: 21300000, guid: 18e8e0505ceff1941bab4243f651a0e1, type: 3}
+      - {fileID: 21300000, guid: 8e7d2300740080949a8693ac78668456, type: 3}
+  gunAnims:
+    reorderableList:
+      canAdd: 1
+      canRemove: 1
+      draggable: 1
+      expandable: 1
+      multipleSelection: 1
+      isExpanded: 1
+      label:
+        m_Text: Keys
+        m_Image: {fileID: 0}
+        m_Tooltip: 
+        m_TextWithWhitespace: "Keys\u200B"
+      headerHeight: 18
+      footerHeight: 13
+      slideEasing: 0.15
+      verticalSpacing: 2
+      showDefaultBackground: 1
+      elementDisplayType: 0
+      elementNameProperty: 
+      elementNameOverride: 
+      elementIcon: {fileID: 0}
+    reqReferences: {fileID: 0}
+    isExpanded: 1
+    _keyValues: 00000000010000000200000003000000
+    _keys: 00000000010000000200000003000000
+    _values:
+    - reorderableList:
+        canAdd: 1
+        canRemove: 1
+        draggable: 1
+        expandable: 1
+        multipleSelection: 1
+        isExpanded: 1
+        label:
+          m_Text: Keys
+          m_Image: {fileID: 0}
+          m_Tooltip: 
+          m_TextWithWhitespace: "Keys\u200B"
+        headerHeight: 18
+        footerHeight: 13
+        slideEasing: 0.15
+        verticalSpacing: 2
+        showDefaultBackground: 1
+        elementDisplayType: 0
+        elementNameProperty: 
+        elementNameOverride: 
+        elementIcon: {fileID: 0}
+      reqReferences: {fileID: 0}
+      isExpanded: 1
+      _keyValues:
+      - {x: 0, y: 1, z: 0}
+      - {x: 1, y: 0, z: 0}
+      - {x: 0, y: -1, z: 0}
+      - {x: -1, y: 0, z: 0}
+      _keys:
+      - {x: 0, y: 1, z: 0}
+      - {x: 1, y: 0, z: 0}
+      - {x: 0, y: -1, z: 0}
+      - {x: -1, y: 0, z: 0}
+      _values:
+      - {fileID: 9100000, guid: 55e8d8370a902a54cbbac44ad080b283, type: 2}
+      - {fileID: 9100000, guid: 94b3f1de6379ff847ab3c4db7e1cee42, type: 2}
+      - {fileID: 9100000, guid: 357cdc5f8d1080e4b8234e789029dae0, type: 2}
+      - {fileID: 9100000, guid: c324d5f76fbc72d42a747023d4e66eb7, type: 2}
+    - reorderableList:
+        canAdd: 1
+        canRemove: 1
+        draggable: 1
+        expandable: 1
+        multipleSelection: 1
+        isExpanded: 1
+        label:
+          m_Text: Keys
+          m_Image: {fileID: 0}
+          m_Tooltip: 
+          m_TextWithWhitespace: "Keys\u200B"
+        headerHeight: 18
+        footerHeight: 13
+        slideEasing: 0.15
+        verticalSpacing: 2
+        showDefaultBackground: 1
+        elementDisplayType: 0
+        elementNameProperty: 
+        elementNameOverride: 
+        elementIcon: {fileID: 0}
+      reqReferences: {fileID: 0}
+      isExpanded: 1
+      _keyValues:
+      - {x: 0, y: 1, z: 0}
+      - {x: 1, y: 0, z: 0}
+      - {x: 0, y: -1, z: 0}
+      - {x: -1, y: 0, z: 0}
+      _keys:
+      - {x: 0, y: 1, z: 0}
+      - {x: 1, y: 0, z: 0}
+      - {x: 0, y: -1, z: 0}
+      - {x: -1, y: 0, z: 0}
+      _values:
+      - {fileID: 9100000, guid: 5b2c9614d048c9b40b9155210433e0e8, type: 2}
+      - {fileID: 9100000, guid: 9d88c72970015e74cb5f432c4f9c6795, type: 2}
+      - {fileID: 9100000, guid: 3ab6051416006fa498f3b65f7d64ffc3, type: 2}
+      - {fileID: 9100000, guid: e95a9a8e93cc0ff49a05d6ceb43322aa, type: 2}
+    - reorderableList:
+        canAdd: 1
+        canRemove: 1
+        draggable: 1
+        expandable: 1
+        multipleSelection: 1
+        isExpanded: 1
+        label:
+          m_Text: Keys
+          m_Image: {fileID: 0}
+          m_Tooltip: 
+          m_TextWithWhitespace: "Keys\u200B"
+        headerHeight: 18
+        footerHeight: 13
+        slideEasing: 0.15
+        verticalSpacing: 2
+        showDefaultBackground: 1
+        elementDisplayType: 0
+        elementNameProperty: 
+        elementNameOverride: 
+        elementIcon: {fileID: 0}
+      reqReferences: {fileID: 0}
+      isExpanded: 1
+      _keyValues:
+      - {x: 0, y: 1, z: 0}
+      - {x: 1, y: 0, z: 0}
+      - {x: 0, y: -1, z: 0}
+      - {x: -1, y: 0, z: 0}
+      _keys:
+      - {x: 0, y: 1, z: 0}
+      - {x: 1, y: 0, z: 0}
+      - {x: 0, y: -1, z: 0}
+      - {x: -1, y: 0, z: 0}
+      _values:
+      - {fileID: 9100000, guid: 2768519eb785dc4429d983fd814a5e9c, type: 2}
+      - {fileID: 9100000, guid: f97d2a88fa90d4d43b2708c05d4558e6, type: 2}
+      - {fileID: 9100000, guid: d7b78799f99e52e4f90076a4922c8214, type: 2}
+      - {fileID: 9100000, guid: 76e15183a5623ae4999dfc38eb4509d9, type: 2}
+    - reorderableList:
+        canAdd: 1
+        canRemove: 1
+        draggable: 1
+        expandable: 1
+        multipleSelection: 1
+        isExpanded: 1
+        label:
+          m_Text: Keys
+          m_Image: {fileID: 0}
+          m_Tooltip: 
+          m_TextWithWhitespace: "Keys\u200B"
+        headerHeight: 18
+        footerHeight: 13
+        slideEasing: 0.15
+        verticalSpacing: 2
+        showDefaultBackground: 1
+        elementDisplayType: 0
+        elementNameProperty: 
+        elementNameOverride: 
+        elementIcon: {fileID: 0}
+      reqReferences: {fileID: 0}
+      isExpanded: 1
+      _keyValues:
+      - {x: 0, y: 1, z: 0}
+      - {x: 1, y: 0, z: 0}
+      - {x: 0, y: -1, z: 0}
+      - {x: -1, y: 0, z: 0}
+      _keys:
+      - {x: 0, y: 1, z: 0}
+      - {x: 1, y: 0, z: 0}
+      - {x: 0, y: -1, z: 0}
+      - {x: -1, y: 0, z: 0}
+      _values:
+      - {fileID: 9100000, guid: 55e8d8370a902a54cbbac44ad080b283, type: 2}
+      - {fileID: 9100000, guid: 94b3f1de6379ff847ab3c4db7e1cee42, type: 2}
+      - {fileID: 9100000, guid: 357cdc5f8d1080e4b8234e789029dae0, type: 2}
+      - {fileID: 9100000, guid: c324d5f76fbc72d42a747023d4e66eb7, type: 2}

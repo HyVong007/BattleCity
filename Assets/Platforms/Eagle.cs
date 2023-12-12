@@ -20,7 +20,7 @@ namespace BattleCity.Platforms
 
 		[SerializeField] private SpriteRenderer spriteRenderer;
 		[SerializeField] private Sprite dead;
-		public override bool OnBulletCollision(Bullet bullet)
+		public override bool OnCollision(Bullet bullet)
 		{
 			throw new NotImplementedException();
 		}

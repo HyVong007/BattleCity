@@ -9,6 +9,7 @@ namespace BattleCity.Platforms
 	{
 		[SerializeField] private Particle particle;
 
+
 		public override bool CanMove(Tank tank, Vector3 newDir)
 			=> CanMove(tank.transform.position - transform.position, newDir, BLOCKS, particle);
 
@@ -29,7 +30,7 @@ namespace BattleCity.Platforms
 			};
 
 
-		public override bool OnBulletCollision(Bullet bullet)
+		public override bool OnCollision(Bullet bullet)
 		{
 			throw new System.NotImplementedException();
 		}

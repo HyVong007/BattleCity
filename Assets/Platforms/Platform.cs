@@ -10,9 +10,10 @@ namespace BattleCity.Platforms
 	public abstract class Platform : MonoBehaviour, IBulletCollision
 	{
 		public static ReadOnlyArray<ReadOnlyArray<Platform>> platforms { get; private set; }
+		private static Platform[][] Δarray;
 
 
-		public abstract bool OnBulletCollision(Bullet bullet);
+		public abstract bool OnCollision(Bullet bullet);
 
 
 		public static readonly IReadOnlyDictionary<int, string> INT_NAME = new Dictionary<int, string>
@@ -24,7 +25,7 @@ namespace BattleCity.Platforms
 			[4] = $"{nameof(Brick)} left down",
 			[5] = $"{nameof(Brick)} right",
 			[6] = $"{nameof(Brick)} right up",
-			[7] = $"{nameof(Brick)} righ down",
+			[7] = $"{nameof(Brick)} right down",
 			[8] = $"{nameof(Brick)} up",
 			[9] = $"{nameof(Brick)} down",
 			[10] = $"{nameof(Steel)} full",
@@ -42,26 +43,13 @@ namespace BattleCity.Platforms
 			[22] = nameof(Forest),
 			[23] = nameof(Sand),
 		};
-		public static void LoadLevel(in Level level)
+		private static Transform anchor;
+		public static void LoadLevel(Level level)
 		{
-			var anchor = new GameObject().transform;
+			anchor = new GameObject().transform;
 			anchor.name = "Platforms";
-			var array = new ReadOnlyArray<Platform>[level.platforms.Length];
-			int NUM_Y = level.platforms[0].Length;
-			for (int x = 0; x < array.Length; ++x)
-			{
-				var a = new Platform[NUM_Y];
-				array[x] = new(a);
-				for (int y = 0; y < NUM_Y; ++y)
-				{
-					var name = INT_NAME[level.platforms[x][y]];
-					a[y] = name == null ? null : Addressables.InstantiateAsync(
-						$"Assets/Platforms/Prefab/{name}.prefab",
-						new Vector3(x, y), Quaternion.identity, anchor)
-						.WaitForCompletion().GetComponent<Platform>();
-				}
-			}
-			platforms = new(array);
+			platforms = Util.NewReadOnlyArray(level.width, level.height, out Δarray,
+				(x, y) => New(level.platforms[x][y], new(x, y)));
 		}
 
 
@@ -81,6 +69,19 @@ namespace BattleCity.Platforms
 
 
 		public abstract bool CanMove(Tank tank, Vector3 newDir);
+
+
+		public static Platform New(int ID, in Vector3 position)
+			=> ID == 0 ? null : Δarray[(int)position.x][(int)position.y] = Addressables.InstantiateAsync(
+				$"Assets/Platforms/Prefab/{INT_NAME[ID]}.prefab", position,
+				Quaternion.identity, anchor).WaitForCompletion().GetComponent<Platform>();
+
+
+		private void OnDisable()
+		{
+			var pos = transform.position;
+			Δarray[(int)pos.x][(int)pos.y] = null;
+		}
 
 
 		#region Common codes for Brick, Steel, Forest
@@ -126,8 +127,8 @@ namespace BattleCity.Platforms
 			[new(0.5f, -1)] = 3,
 		};
 
-		private static readonly IReadOnlyDictionary<Vector3, Dictionary<Vector3, int>> RELATIVE_DIR_BLOCK
-			= new Dictionary<Vector3, Dictionary<Vector3, int>>
+		private static readonly IReadOnlyDictionary<Vector3, Dictionary<Vector3, int>>
+			RELATIVE_DIR_BLOCK = new Dictionary<Vector3, Dictionary<Vector3, int>>
 			{
 				[new(-0.5f, 0.5f)] = new()
 				{

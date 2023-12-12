@@ -48,14 +48,8 @@ namespace BattleCity
 		/// <summary>
 		/// z = 0
 		/// </summary>
-#if !DEBUG
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
-		public static Vector3Int ToVector3Int(this in Vector3 value) =>
-#if DEBUG
-				value.x < 0 || value.y < 0 ? throw new IndexOutOfRangeException($"value= {value} phải là tọa độ không âm !") :
-#endif
-			new((int)value.x, (int)value.y, 0);
+		public static Vector3Int ToVector3Int(this in Vector3 value) => new((int)value.x, (int)value.y, 0);
 		#endregion
 
 
@@ -68,6 +62,37 @@ namespace BattleCity
 				await UniTask.Yield();
 			}
 			if (!token.IsCancellationRequested && transform) transform.position = dest;
+		}
+
+
+		public static ReadOnlyArray<T> NewReadOnlyArray<T>(int size, out T[] array) => new(array = new T[size]);
+
+
+		public static ReadOnlyArray<ReadOnlyArray<T>> NewReadOnlyArray<T>(int sizeX, int sizeY, out T[][] array, Func<int, int, T> initialize = null)
+		{
+			array = new T[sizeX][];
+			var baking = new ReadOnlyArray<T>[sizeX];
+			for (int x = 0; x < sizeX; ++x)
+			{
+				array[x] = new T[sizeY];
+				baking[x] = new(array[x]);
+				if (initialize != null)
+					for (int y = 0; y < sizeY; ++y) array[x][y] = initialize(x, y);
+			}
+			return new(baking);
+		}
+
+
+		public static T[][] NewArray<T>(int sizeX, int sizeY, Func<int, int, T> initialize = null)
+		{
+			var array = new T[sizeX][];
+			for (int x = 0; x < sizeX; ++x)
+			{
+				array[x] = new T[sizeY];
+				if (initialize != null)
+					for (int y = 0; y < sizeY; ++y) array[x][y] = initialize(x, y);
+			}
+			return array;
 		}
 	}
 
