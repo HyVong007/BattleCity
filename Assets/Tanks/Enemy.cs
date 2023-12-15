@@ -11,7 +11,7 @@ namespace BattleCity.Tanks
 
 		public override bool OnCollision(Bullet bullet)
 		{
-			throw new System.NotImplementedException();
+			return true;
 		}
 
 
@@ -30,6 +30,12 @@ namespace BattleCity.Tanks
 				direction = newDir;
 			}
 			#endregion
+		}
+
+
+		public override void Explode()
+		{
+			throw new System.NotImplementedException();
 		}
 	}
 }

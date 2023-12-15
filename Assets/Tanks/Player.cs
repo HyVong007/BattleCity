@@ -63,11 +63,11 @@ namespace BattleCity.Tanks
 
 		public override bool OnCollision(Bullet bullet)
 		{
-			throw new System.NotImplementedException();
+			Explode();
+			return true;
 		}
 
 
-		public int count;
 		private new async void OnEnable()
 		{
 			base.OnEnable();
@@ -82,6 +82,7 @@ namespace BattleCity.Tanks
 		}
 
 
+		public int count;
 		async void Hehe()
 		{
 			while (true)
@@ -128,6 +129,9 @@ namespace BattleCity.Tanks
 		}
 
 
-
+		public override void Explode()
+		{
+			Destroy(gameObject);
+		}
 	}
 }

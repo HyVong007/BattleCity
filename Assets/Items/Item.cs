@@ -13,6 +13,7 @@ namespace BattleCity.Items
 	{
 		public static Item current { get; private set; }
 		private static readonly ReadOnlyArray<string> PREFAB_NAMES;
+
 		static Item()
 		{
 			var types = Assembly.GetAssembly(typeof(Item)).GetTypes()

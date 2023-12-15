@@ -8,6 +8,12 @@ public class Test : MonoBehaviour
 
 	private void Start()
 	{
-		print(Vector3.up.normalized);
+		Destroy(gameObject);
+	}
+
+
+	private void OnDisable()
+	{
+		print("disable");
 	}
 }

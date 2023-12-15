@@ -45,6 +45,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb80c77b45b349642b6161f1b84a0a55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 0.1
+  delay: 5
+  sprites:
+    reorderableList:
+      canAdd: 1
+      canRemove: 1
+      draggable: 1
+      expandable: 1
+      multipleSelection: 1
+      isExpanded: 0
+      label:
+        m_Text: Keys
+        m_Image: {fileID: 0}
+        m_Tooltip: 
+        m_TextWithWhitespace: "Keys\u200B"
+      headerHeight: 18
+      footerHeight: 13
+      slideEasing: 0.15
+      verticalSpacing: 2
+      showDefaultBackground: 1
+      elementDisplayType: 0
+      elementNameProperty: 
+      elementNameOverride: 
+      elementIcon: {fileID: 0}
+    reqReferences: {fileID: 0}
+    isExpanded: 0
+    _keyValues:
+    - {x: 0, y: 1, z: 0}
+    - {x: 1, y: 0, z: 0}
+    - {x: 0, y: -1, z: 0}
+    - {x: -1, y: 0, z: 0}
+    _keys:
+    - {x: 0, y: 1, z: 0}
+    - {x: 1, y: 0, z: 0}
+    - {x: 0, y: -1, z: 0}
+    - {x: -1, y: 0, z: 0}
+    _values:
+    - {fileID: -2346302928887187388, guid: 4e93e79410256194a97bc06e7298efc3, type: 3}
+    - {fileID: 6740024121541949626, guid: 4e93e79410256194a97bc06e7298efc3, type: 3}
+    - {fileID: -2863499236874410579, guid: 4e93e79410256194a97bc06e7298efc3, type: 3}
+    - {fileID: 5379323082974078785, guid: 4e93e79410256194a97bc06e7298efc3, type: 3}
 --- !u!212 &5510775506654240172
 SpriteRenderer:
   m_ObjectHideFlags: 0

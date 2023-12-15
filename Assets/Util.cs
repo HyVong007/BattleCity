@@ -150,6 +150,20 @@ namespace BattleCity
 		private ObjectPool() { }
 
 
+		public ObjectPool(T prefab)
+		{
+			this.prefab = prefab;
+			var obj = new GameObject().transform;
+			obj.name = $"{prefab.name} Pool";
+			hiddenAnchor = new GameObject().transform;
+			hiddenAnchor.name = "Hidden Anchor";
+			hiddenAnchor.SetParent(obj);
+			visibleAnchor = new GameObject().transform;
+			visibleAnchor.name = "Visible Anchor";
+			visibleAnchor.SetParent(obj);
+		}
+
+
 		public ObjectPool(T prefab, Transform hiddenAnchor = null, Transform visibleAnchor = null)
 		{
 			this.prefab = prefab;
@@ -212,6 +226,7 @@ namespace BattleCity
 		}
 
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		IEnumerator IEnumerable.GetEnumerator() => visibleObj.GetEnumerator();
 
 
@@ -420,7 +435,7 @@ namespace BattleCity
 
 				if (enabled) return;
 
-				// Get reference
+				// GetList reference
 				hMainWindow = new HandleRef(null, GetActiveWindow());
 				procDelegate = WndProc;
 				// Generate handler

@@ -36,7 +36,8 @@ namespace BattleCity.Tanks
 		protected Animator animator;
 
 
-		static Tank()
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+		private static void Init()
 		{
 			BattleField.onAwake += () =>
 			{
@@ -64,6 +65,12 @@ namespace BattleCity.Tanks
 				&& (Item.current.transform.position - transform.position).sqrMagnitude < 1)
 				Item.current.OnCollision(this);
 			#endregion
+		}
+
+
+		protected void OnDisable()
+		{
+			Δarray[index.x][index.y] = null;
 		}
 
 
@@ -152,5 +159,7 @@ namespace BattleCity.Tanks
 
 
 		public abstract bool OnCollision(Bullet bullet);
+
+		public abstract void Explode();
 	}
 }

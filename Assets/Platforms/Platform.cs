@@ -64,7 +64,37 @@ namespace BattleCity.Platforms
 
 			[SerializeField] private Y[] X;
 
-			public GameObject this[int x, int y] => X[x].objs[y];
+			public GameObject this[int x, int y]
+			{
+				get => X[x].objs[y];
+				private set => X[x].objs[y] = value;
+			}
+
+
+			public bool Destroy(int x, int y)
+			{
+				if (this[x, y])
+				{
+					UnityEngine.Object.Destroy(this[x, y]);
+					this[x, y] = null;
+					return true;
+				}
+
+				return false;
+			}
+
+
+			public bool isEmpty
+			{
+				get
+				{
+					foreach (var y in X)
+						foreach (var obj in y.objs)
+							if (obj) return false;
+
+					return true;
+				}
+			}
 		}
 
 
@@ -85,15 +115,13 @@ namespace BattleCity.Platforms
 
 
 		#region Common codes for Brick, Steel, Forest
-		/*
-		 * See "/Docs/Platform.CanMove().png" to understand the Algorithm !
-		 */
+		#region CanMove
 		protected static bool CanMove(in Vector3 relativePos, in Vector3 newDir,
 			IReadOnlyDictionary<int, ReadOnlyArray<Vector2Int>> BLOCKS, Particle particle)
 		{
 			ReadOnlyArray<Vector2Int> block;
-			if (RELATIVE_BLOCK.TryGetValue(relativePos, out int blockID)) block = BLOCKS[blockID];
-			else if (RELATIVE_DIR_BLOCK.TryGetValue(relativePos, out var dir_blockID))
+			if (TANK_RELATIVE_BLOCK.TryGetValue(relativePos, out int blockID)) block = BLOCKS[blockID];
+			else if (TANK_RELATIVE_DIR_BLOCK.TryGetValue(relativePos, out var dir_blockID))
 				block = BLOCKS[dir_blockID[newDir]];
 			else throw new ArgumentOutOfRangeException();
 
@@ -107,7 +135,7 @@ namespace BattleCity.Platforms
 		}
 
 
-		private static readonly IReadOnlyDictionary<Vector3, int> RELATIVE_BLOCK = new Dictionary<Vector3, int>
+		private static readonly IReadOnlyDictionary<Vector3, int> TANK_RELATIVE_BLOCK = new Dictionary<Vector3, int>
 		{
 			[new(-0.5f, 1)] = 2,
 			[new(0, 1)] = 24,
@@ -128,7 +156,7 @@ namespace BattleCity.Platforms
 		};
 
 		private static readonly IReadOnlyDictionary<Vector3, Dictionary<Vector3, int>>
-			RELATIVE_DIR_BLOCK = new Dictionary<Vector3, Dictionary<Vector3, int>>
+			TANK_RELATIVE_DIR_BLOCK = new Dictionary<Vector3, Dictionary<Vector3, int>>
 			{
 				[new(-0.5f, 0.5f)] = new()
 				{
@@ -151,6 +179,53 @@ namespace BattleCity.Platforms
 					[Vector3.up] = 4
 				}
 			};
+		#endregion
+
+		#region OnCollisionBullet
+		protected static readonly IReadOnlyDictionary<Vector3, Dictionary<Vector3, int>>
+			BULLET_DIR_RELATIVE_BLOCK = new Dictionary<Vector3, Dictionary<Vector3, int>>
+			{
+				[Vector3.up] = new()
+				{
+					[new(-0.5f, -0.5f)] = 1,
+					[new(0, -0.5f)] = 13,
+					[new(0.5f, -0.5f)] = 3,
+					[new(-0.5f, 0)] = 2,
+					[default] = 24,
+					[new(0.5f, 0)] = 4
+				},
+				[Vector3.right] = new()
+				{
+					[new(-0.5f, 0.5f)] = 2,
+					[new(-0.5f, 0)] = 12,
+					[new(-0.5f, -0.5f)] = 1,
+					[new(0, 0.5f)] = 4,
+					[default] = 34,
+					[new(0, -0.5f)] = 3
+				},
+				[Vector3.down] = new()
+				{
+					[new(-0.5f, 0.5f)] = 2,
+					[new(0, 0.5f)] = 24,
+					[new(0.5f, 0.5f)] = 4,
+					[new(-0.5f, 0)] = 1,
+					[default] = 13,
+					[new(0.5f, 0)] = 3
+				},
+				[Vector3.left] = new()
+				{
+					[new(0, 0.5f)] = 2,
+					[default] = 12,
+					[new(0, -0.5f)] = 1,
+					[new(0.5f, 0.5f)] = 4,
+					[new(0.5f, 0)] = 34,
+					[new(0.5f, -0.5f)] = 3
+				}
+			};
+
+
+
+		#endregion
 		#endregion
 	}
 }

@@ -14,11 +14,8 @@ namespace BattleCity.Platforms
 			=> CanMove(tank.transform.position - transform.position, newDir, BLOCKS, particle);
 
 
-		/*
-		 * See "/Docs/Platform.CanMove().png" to understand the Algorithm !
-		 */
-		private static readonly IReadOnlyDictionary<int, ReadOnlyArray<Vector2Int>> BLOCKS
-			= new Dictionary<int, ReadOnlyArray<Vector2Int>>
+		private static readonly IReadOnlyDictionary<int, ReadOnlyArray<Vector2Int>>
+			BLOCKS = new Dictionary<int, ReadOnlyArray<Vector2Int>>
 			{
 				[1] = new(new Vector2Int[] { new(0, 0) }),
 				[2] = new(new Vector2Int[] { new(0, 1) }),
@@ -33,7 +30,16 @@ namespace BattleCity.Platforms
 
 		public override bool OnCollision(Bullet bullet)
 		{
-			throw new System.NotImplementedException();
+			var block = BLOCKS[BULLET_DIR_RELATIVE_BLOCK[bullet.direction]
+				[bullet.transform.position - transform.position]];
+			bool hideBullet = false;
+			for (int b = 0; b < block.Length; ++b)
+				hideBullet |= (
+					bullet.canDestroySteel ? particle.Destroy(block[b].x, block[b].y)
+					: particle[block[b].x, block[b].y]);
+
+			if (bullet.canDestroySteel && hideBullet && particle.isEmpty) Destroy(gameObject);
+			return hideBullet;
 		}
 	}
 }
