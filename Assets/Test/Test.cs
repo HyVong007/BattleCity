@@ -1,19 +1,24 @@
 using BattleCity.LevelEditors;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 
 public class Test : MonoBehaviour
 {
-	public LevelEditor editor;
-
 	private void Start()
 	{
-		Destroy(gameObject);
+		var hehe = new Vector3();
+		hehe.X();
+		print(hehe);
 	}
 
 
-	private void OnDisable()
-	{
-		print("disable");
-	}
+
+
+}
+
+
+public static class A
+{
+	public static void X(this ref Vector3 v) => v = new(456, 789);
 }

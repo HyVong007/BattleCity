@@ -8,7 +8,14 @@ namespace BattleCity
 {
 	public readonly struct Level
 	{
+		/// <summary>
+		/// Tọa độ theo Platform
+		/// </summary>
 		public readonly IReadOnlyDictionary<Color, Vector2Int> playerIndexes;
+
+		/// <summary>
+		/// Tọa độ theo Platform
+		/// </summary>
 		public readonly ReadOnlyArray<Vector2Int> enemyIndexes;
 		public readonly ReadOnlyArray<ReadOnlyArray<int>> platforms;
 

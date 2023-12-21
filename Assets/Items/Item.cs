@@ -37,8 +37,8 @@ namespace BattleCity.Items
 		{
 			if (current) Destroy(current.gameObject);
 			var origin = new Vector2Int(
-				Random.Range(2, (BattleField.level.width - 2) * 2 + 1),
-				Random.Range(2, (BattleField.level.height - 2) * 2 + 1));
+				Random.Range(2, (Main.level.width - 2) * 2 + 1),
+				Random.Range(2, (Main.level.height - 2) * 2 + 1));
 			current = Addressables.InstantiateAsync("Assets/Items/Prefab" +
 				$"/{PREFAB_NAMES[Random.Range(0, PREFAB_NAMES.Length)]}.prefab",
 				origin.ToVector3() / 2f,

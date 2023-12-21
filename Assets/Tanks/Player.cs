@@ -1,13 +1,67 @@
-﻿using Cysharp.Threading.Tasks;
-using RotaryHeart.Lib.SerializableDictionary;
+﻿using RotaryHeart.Lib.SerializableDictionary;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 
 namespace BattleCity.Tanks
 {
 	public sealed class Player : Tank
 	{
+		public static readonly IReadOnlyDictionary<Color, Player> players = new Dictionary<Color, Player>();
+
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+		private static void Init()
+		{
+			var dict = players as Dictionary<Color, Player>;
+			var anchor = new GameObject().transform;
+			anchor.name = "Players";
+			DontDestroyOnLoad(anchor);
+			foreach (var color in new Color[] { Color.Green, Color.Yellow })
+			{
+				var player = dict[color] = Instantiate(Addressables.LoadAssetAsync<GameObject>("Assets/Tanks/Prefab/Player.prefab")
+					.WaitForCompletion().GetComponent<Player>(), anchor);
+				player.name = color.ToString();
+				player.color = color;
+			}
+		}
+
+
+		public static Player New(Color color, bool borrowLife = false)
+		{
+			if (BattleField.count == 1) goto CHECK_LIFE;
+			if (players[color].isExploded) goto CHECK_LIFE;
+			goto SPAWN_PLAYER;
+
+		CHECK_LIFE:
+			if (BattleField.playerLifes[color] != 0)
+			{
+				--BattleField.playerLifes[color];
+				goto SPAWN_PLAYER;
+			}
+			if (!borrowLife) return null;
+
+			// Kiểm tra đồng đội còn mạng không để mượn mạng
+			var allyColor = color == Color.Yellow ? Color.Green : Color.Yellow;
+			if (BattleField.playerLifes[allyColor] != 0)
+			{
+				--BattleField.playerLifes[allyColor];
+				goto SPAWN_PLAYER;
+			}
+			return null;
+
+		SPAWN_PLAYER:
+			// Animation
+
+			var player = players[color];
+			if (player.isExploded) player.star = 0;
+			player.transform.position = Main.level.playerIndexes[color].ToVector3();
+			player.gameObject.SetActive(true);
+			return player;
+		}
+
+
 		[SerializeField]
 		private SerializableDictionaryBase<int, SerializableDictionaryBase<Color,
 			SerializableDictionaryBase<Vector3, Sprite>>> sprites;
@@ -16,14 +70,17 @@ namespace BattleCity.Tanks
 		private SerializableDictionaryBase<int, SerializableDictionaryBase<Color,
 			SerializableDictionaryBase<Vector3, RuntimeAnimatorController>>> anims;
 
+		protected override RuntimeAnimatorController anim
+			=> star == 3 ? asset.gunAnims[color][direction]
+			: anims[star][color][direction];
 
-		// TEST
-		[SerializeField] private Color Δcolor;
+
+		private Color Δcolor;
 		public override Color color
 		{
 			get => Δcolor;
 
-			protected set
+			set
 			{
 				Δcolor = value;
 				spriteRenderer.sprite = star == 3 ? asset.gunSprites[color][direction]
@@ -32,7 +89,7 @@ namespace BattleCity.Tanks
 		}
 
 
-		private Vector3 Δdirection;
+		private Vector3 Δdirection = Vector3.up;
 		public override Vector3 direction
 		{
 			get => Δdirection;
@@ -60,7 +117,6 @@ namespace BattleCity.Tanks
 		}
 
 
-
 		public override bool OnCollision(Bullet bullet)
 		{
 			Explode();
@@ -68,33 +124,10 @@ namespace BattleCity.Tanks
 		}
 
 
-		private new async void OnEnable()
+		private new void OnEnable()
 		{
 			base.OnEnable();
-
-			// TEST
-			color = Δcolor;
-
-			// Green auto move
-			if (color != Color.Green) return;
-
-			Hehe();
-		}
-
-
-		public int count;
-		async void Hehe()
-		{
-			while (true)
-			{
-				for (int i = 0; i < count; ++i)
-					if (!isMoving && CanMove(Vector3.right)) await Move(Vector3.right);
-
-				for (int i = 0; i < count; ++i)
-					if (!isMoving && CanMove(Vector3.left)) await Move(Vector3.left);
-
-				await UniTask.Yield();
-			}
+			isExploded = false;
 		}
 
 
@@ -109,10 +142,12 @@ namespace BattleCity.Tanks
 			else if (Input.GetKey(KeyCode.DownArrow)) newDir = Vector3.down;
 			else if (Input.GetKey(KeyCode.LeftArrow)) newDir = Vector3.left;
 
-			if (!isMoving && newDir != default && CanMove(direction = newDir))
-				Move(newDir);
+			if (!isMoving && newDir != default)
+			{
+				if (direction != newDir) direction = newDir;
+				else if (CanMove(newDir)) Move(newDir);
+			}
 			#endregion
-
 
 			if (Input.GetKeyDown(KeyCode.Space))
 			{
@@ -129,9 +164,10 @@ namespace BattleCity.Tanks
 		}
 
 
+		public bool isExploded { get; private set; }
 		public override void Explode()
 		{
-			Destroy(gameObject);
+			gameObject.SetActive(false);
 		}
 	}
 }

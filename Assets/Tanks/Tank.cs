@@ -3,6 +3,7 @@ using BattleCity.Platforms;
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 
@@ -15,7 +16,7 @@ namespace BattleCity.Tanks
 		protected static Tank[][] Δarray;
 
 
-		public abstract Color color { get; protected set; }
+		public abstract Color color { get; set; }
 
 		[SerializeField] protected Asset asset;
 		/// <summary>
@@ -25,7 +26,7 @@ namespace BattleCity.Tanks
 
 		public float speed { get; protected set; }
 
-		public bool hasShip { get; protected set; }
+		public Ship ship { get; protected set; }
 
 		[SerializeField]
 		[HideInInspector]
@@ -41,8 +42,8 @@ namespace BattleCity.Tanks
 		{
 			BattleField.onAwake += () =>
 			{
-				tanks = Util.NewReadOnlyArray(BattleField.level.width * 2,
-					BattleField.level.height * 2, out Δarray);
+				tanks = Util.NewReadOnlyArray(Main.level.width * 2,
+					Main.level.height * 2, out Δarray);
 			};
 		}
 
@@ -58,7 +59,7 @@ namespace BattleCity.Tanks
 		{
 			direction = this is Player ? Vector3.up : Vector3.down;
 			index = (transform.position * 2).ToVector3Int();
-			Δarray[index.x][index.y] = this;
+			if (!Δarray[index.x][index.y]) Δarray[index.x][index.y] = this;
 
 			#region Check Item
 			if (Item.current && (Setting.enemyCanPickItem || this is Player)
@@ -68,9 +69,14 @@ namespace BattleCity.Tanks
 		}
 
 
+		private CancellationTokenSource cts = new();
+		protected CancellationToken Token => cts.Token;
 		protected void OnDisable()
 		{
-			Δarray[index.x][index.y] = null;
+			if (Δarray[index.x][index.y] == this) Δarray[index.x][index.y] = null;
+			cts.Cancel();
+			cts.Dispose();
+			cts = new();
 		}
 
 
@@ -120,41 +126,46 @@ namespace BattleCity.Tanks
 		#endregion
 
 
-		public bool isMoving { get; private set; }
+		private UniTask moveTask;
+		public bool isMoving => moveTask.isRunning();
+
 		[Tooltip("Tối đa 0.125")]
 		[SerializeField] private float moveSpeed;
 		[Tooltip("Thời gian (ms) mỗi bước moveSpeed")]
 		[SerializeField] private int delayMoving;
 		private Vector3Int index;
+		protected abstract RuntimeAnimatorController anim { get; }
 
 		public async UniTask Move(Vector3 dir)
 		{
 			direction = dir;
-			isMoving = isMoving ? throw new InvalidOperationException() : true;
-			try
+			if (isMoving) throw new Exception();
+			using var token = CancellationTokenSource.CreateLinkedTokenSource(Token, BattleField.Token);
+
+			if (Δarray[index.x][index.y] == this) Δarray[index.x][index.y] = null;
+			index += dir.ToVector3Int();
+			Δarray[index.x][index.y] = this;
+			dir *= moveSpeed;
+			animator.runtimeAnimatorController = anim;
+			for (float i = 0.5f / moveSpeed; i > 0; --i)
 			{
-				Δarray[index.x][index.y] = null;
-				index += dir.ToVector3Int();
-				Δarray[index.x][index.y] = this;
-				dir *= moveSpeed;
-				for (float i = 0.5f / moveSpeed; i > 0; --i)
-				{
-					transform.position += dir;
-					await UniTask.Delay(delayMoving);
-				}
-				transform.position = new(index.x * 0.5f, index.y * 0.5f);
-
-				#region Check Item
-				if (Item.current && (Setting.enemyCanPickItem || this is Player)
-					&& (Item.current.transform.position - transform.position).sqrMagnitude < 1)
-					Item.current.OnCollision(this);
-				#endregion
-
-				#region Check Special Platform
-
-				#endregion
+				transform.position += dir;
+				await (moveTask = UniTask.Delay(delayMoving));
+				if (token.IsCancellationRequested) return;
 			}
-			finally { isMoving = false; }
+			transform.position = new(index.x * 0.5f, index.y * 0.5f);
+
+			#region Check Item
+			if (Item.current && (Setting.enemyCanPickItem || this is Player)
+				&& (Item.current.transform.position - transform.position).sqrMagnitude < 1)
+				Item.current.OnCollision(this);
+			#endregion
+
+			#region Check Special Platform
+
+			#endregion
+
+			animator.runtimeAnimatorController = null;
 		}
 
 

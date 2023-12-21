@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -94,6 +95,28 @@ namespace BattleCity
 			}
 			return array;
 		}
+
+
+		public static bool isRunning(this ref UniTask task)
+		{
+			try { return task.Status == UniTaskStatus.Pending; }
+			catch (InvalidOperationException)
+			{
+				task = UniTask.CompletedTask;
+				return false;
+			}
+		}
+
+
+		public static bool isRunning<T>(this ref UniTask<T> task)
+		{
+			try { return task.Status == UniTaskStatus.Pending; }
+			catch (InvalidOperationException)
+			{
+				task = default;
+				return false;
+			}
+		}
 	}
 
 
@@ -145,6 +168,7 @@ namespace BattleCity
 		[SerializeField] private Transform visibleAnchor, hiddenAnchor;
 		[SerializeField] private List<T> hiddenObj = new();
 		private readonly List<T> visibleObj = new();
+		public GameObject gameObject { get; private set; }
 
 
 		private ObjectPool() { }
@@ -153,14 +177,13 @@ namespace BattleCity
 		public ObjectPool(T prefab)
 		{
 			this.prefab = prefab;
-			var obj = new GameObject().transform;
-			obj.name = $"{prefab.name} Pool";
+			gameObject = new() { name = $"{prefab.name} Pool" };
 			hiddenAnchor = new GameObject().transform;
-			hiddenAnchor.name = "Hidden Anchor";
-			hiddenAnchor.SetParent(obj);
+			hiddenAnchor.name = "Hidden";
+			hiddenAnchor.SetParent(gameObject.transform);
 			visibleAnchor = new GameObject().transform;
-			visibleAnchor.name = "Visible Anchor";
-			visibleAnchor.SetParent(obj);
+			visibleAnchor.name = "Visible";
+			visibleAnchor.SetParent(gameObject.transform);
 		}
 
 

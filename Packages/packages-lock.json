@@ -14,11 +14,12 @@
       "dependencies": {},
       "hash": "8a8fa5a9659a6d63f196391c71e06c4286c8acd7"
     },
-    "com.rotaryheart.serialized_dictionary_lite": {
-      "version": "file:Serialized Dictionary Lite",
+    "com.rotaryheart.serializabledictionarylite": {
+      "version": "https://github.com/RotaryHeart/SerializableDictionaryLite.git",
       "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
+      "source": "git",
+      "dependencies": {},
+      "hash": "f5b89b878627153ce82cd2a0c61679aa18364f09"
     },
     "com.unity.2d.animation": {
       "version": "10.0.3",

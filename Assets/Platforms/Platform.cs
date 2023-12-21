@@ -115,7 +115,6 @@ namespace BattleCity.Platforms
 
 
 		#region Common codes for Brick, Steel, Forest
-		#region CanMove
 		protected static bool CanMove(in Vector3 relativePos, in Vector3 newDir,
 			IReadOnlyDictionary<int, ReadOnlyArray<Vector2Int>> BLOCKS, Particle particle)
 		{
@@ -179,9 +178,7 @@ namespace BattleCity.Platforms
 					[Vector3.up] = 4
 				}
 			};
-		#endregion
 
-		#region OnCollisionBullet
 		protected static readonly IReadOnlyDictionary<Vector3, Dictionary<Vector3, int>>
 			BULLET_DIR_RELATIVE_BLOCK = new Dictionary<Vector3, Dictionary<Vector3, int>>
 			{
@@ -222,10 +219,6 @@ namespace BattleCity.Platforms
 					[new(0.5f, -0.5f)] = 3
 				}
 			};
-
-
-
-		#endregion
 		#endregion
 	}
 }

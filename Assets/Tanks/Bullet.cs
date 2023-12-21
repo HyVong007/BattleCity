@@ -25,8 +25,8 @@ namespace BattleCity.Tanks
 		{
 			BattleField.onAwake += () =>
 			{
-				Xs = new List<Bullet>[BattleField.level.width * 2];
-				Ys = new List<Bullet>[BattleField.level.height * 2];
+				Xs = new List<Bullet>[Main.level.width * 2];
+				Ys = new List<Bullet>[Main.level.height * 2];
 				for (int x = 0; x < Xs.Length; ++x) Xs[x] = new();
 				for (int y = 0; y < Ys.Length; ++y) Ys[y] = new();
 				pool = new(Addressables.LoadAssetAsync<GameObject>("Assets/Tanks/Prefab/Bullet.prefab")
@@ -65,6 +65,7 @@ namespace BattleCity.Tanks
 		}
 
 
+		private CancellationTokenSource cts = new();
 		private void OnDisable()
 		{
 			cts.Cancel();
@@ -82,7 +83,6 @@ namespace BattleCity.Tanks
 		}
 
 
-		private CancellationTokenSource cts = new();
 		private static readonly List<Bullet> tmp = new();
 		private async void Move()
 		{
@@ -92,8 +92,8 @@ namespace BattleCity.Tanks
 			var vectors = DIR_VECTORS[direction];
 			var origin = transform.position;
 			bool stop = false;
-			var token = cts.Token;
-
+			using var token = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, BattleField.Token);
+			
 			while (true)
 			{
 				#region Check Platform

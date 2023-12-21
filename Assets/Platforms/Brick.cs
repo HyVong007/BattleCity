@@ -34,7 +34,7 @@ namespace BattleCity.Platforms
 
 			if (bullet.canDestroySteel)
 			{
-				#region Bullet phá tường thì va chạm như Steel
+				#region Bullet phá sắt thì va chạm như Steel
 				var block = POINT_BLOCKS[id];
 				bool hideBullet = false;
 				for (int b = 0; b < block.Length; ++b)
@@ -61,12 +61,12 @@ namespace BattleCity.Platforms
 
 			bool DestroyRange(int Xmin, int Xmax, int Ymin, int Ymax)
 			{
-				bool result = false;
+				bool hideBullet = false;
 				for (int x = Xmin; x <= Xmax; ++x)
-					for (int y = Ymin; y <= Ymax; ++y) result |= particle.Destroy(x, y);
+					for (int y = Ymin; y <= Ymax; ++y) hideBullet |= particle.Destroy(x, y);
 
-				if (result && particle.isEmpty) Destroy(gameObject);
-				return result;
+				if (hideBullet && particle.isEmpty) Destroy(gameObject);
+				return hideBullet;
 			}
 			#endregion
 		}
