@@ -1,4 +1,5 @@
-﻿using RotaryHeart.Lib.SerializableDictionary;
+﻿using Cysharp.Threading.Tasks;
+using RotaryHeart.Lib.SerializableDictionary;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -94,7 +95,7 @@ namespace BattleCity.Tanks
 		{
 			get => Δdirection;
 
-			protected set
+			set
 			{
 				Δdirection = isMoving ? throw new Exception() : value;
 				spriteRenderer.sprite = star == 3 ? asset.gunSprites[color][direction]
@@ -120,6 +121,7 @@ namespace BattleCity.Tanks
 		public override bool OnCollision(Bullet bullet)
 		{
 			Explode();
+
 			return true;
 		}
 
@@ -131,6 +133,23 @@ namespace BattleCity.Tanks
 		}
 
 
+		public bool isExploded { get; private set; }
+		public override async void Explode()
+		{
+			gameObject.SetActive(false);
+			await UniTask.Delay(1000);
+
+			New(color);
+		}
+
+
+		protected override void AddBulletData(ref Bullet.Data data)
+		{
+		}
+
+
+
+		bool s;
 		private void Update()
 		{
 			if (color != Color.Yellow) return;
@@ -145,29 +164,23 @@ namespace BattleCity.Tanks
 			if (!isMoving && newDir != default)
 			{
 				if (direction != newDir) direction = newDir;
-				else if (CanMove(newDir)) Move(newDir);
+				else if (CanMove(newDir)) Move(newDir).ContinueWith(() =>
+				{
+					if (s)
+					{
+						s = false;
+						Shoot();
+					}
+				});
 			}
 			#endregion
 
-			if (Input.GetKeyDown(KeyCode.Space))
+			if (Input.GetKey(KeyCode.RightAlt))
 			{
-				if (color == Color.Yellow)
-					color = Color.Green;
-				else color = Color.Yellow;
-			}
-
-			if (Input.GetKeyDown(KeyCode.LeftAlt))
-			{
-				if (star < 3) ++star;
-				else star = 0;
+				if (!isMoving) Shoot();
+				else s = true;
 			}
 		}
 
-
-		public bool isExploded { get; private set; }
-		public override void Explode()
-		{
-			gameObject.SetActive(false);
-		}
 	}
 }

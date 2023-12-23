@@ -944,7 +944,7 @@ Tilemap:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Origin: {x: -4, y: -5, z: 0}
   m_Size: {x: 15, y: 16, z: 1}
-  m_TileAnchor: {x: 0, y: 0, z: 0}
+  m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:
     e00: 1
@@ -1007,7 +1007,7 @@ TilemapRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
-  m_ChunkCullingBounds: {x: 0.5, y: 0.5, z: 0}
+  m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
   m_MaxFrameAge: 16
   m_SortOrder: 0
@@ -1061,7 +1061,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tilemap: {fileID: 2084074706869867723}
-  playerPositions:
+  playerIndexes:
     reorderableList:
       canAdd: 1
       canRemove: 1
@@ -1085,12 +1085,10 @@ MonoBehaviour:
       elementIcon: {fileID: 0}
     reqReferences: {fileID: 0}
     isExpanded: 0
-    _keyValues: 0000000003000000
-    _keys: 0000000003000000
-    _values:
-    - {x: 1, y: 2, z: 0}
-    - {x: 4, y: 5, z: 0}
-  enemyPositions: []
+    _keyValues: 
+    _keys: 
+    _values: []
+  enemyIndexes: []
 --- !u!156049354 &3606377471209059522
 Grid:
   m_ObjectHideFlags: 0

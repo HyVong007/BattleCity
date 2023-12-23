@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using NUnit.Framework.Constraints;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -526,5 +527,17 @@ namespace BattleCity
 			[DllImport("user32.dll", EntryPoint = "SetWindowLongPtr")]
 			private static extern IntPtr SetWindowLongPtr64(HandleRef hWnd, int nIndex, IntPtr dwNewLong);
 		}
+	}
+
+
+
+	[Serializable]
+	public sealed class ValueWrapper<T> where T : struct
+	{
+		public T value;
+
+		public override int GetHashCode() => value.GetHashCode();
+
+		public override bool Equals(object obj) => value.Equals(obj);
 	}
 }

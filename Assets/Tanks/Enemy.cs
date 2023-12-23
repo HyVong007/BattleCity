@@ -1,4 +1,5 @@
 ﻿using BattleCity.Items;
+using Cysharp.Threading.Tasks;
 using RotaryHeart.Lib.SerializableDictionary;
 using System;
 using UnityEngine;
@@ -51,7 +52,7 @@ namespace BattleCity.Tanks
 		{
 			get => Δdirection;
 
-			protected set
+			set
 			{
 				Δdirection = value;
 				spriteRenderer.sprite = weapon == Weapon.Gun
@@ -143,44 +144,57 @@ namespace BattleCity.Tanks
 
 		public override bool OnCollision(Bullet bullet)
 		{
+			//if (bullet.color == null) return false;
+			Explode();
 			return true;
 		}
 
 
-		int t, c;
-		private void Update()
+		public override async void Explode()
 		{
-			return;
+			pool.Recycle(this);
+			await UniTask.Delay(1000);
 
-			#region Input Move
-			Vector3 newDir = default; ;
-			if (Input.GetKey(KeyCode.UpArrow)) newDir = Vector3.up;
-			else if (Input.GetKey(KeyCode.RightArrow)) newDir = Vector3.right;
-			else if (Input.GetKey(KeyCode.DownArrow)) newDir = Vector3.down;
-			else if (Input.GetKey(KeyCode.LeftArrow)) newDir = Vector3.left;
+			New();
+		}
 
-			if (!isMoving && newDir != default && CanMove(direction = newDir))
-				Move(newDir);
-			#endregion
 
-			if (Input.GetKeyDown(KeyCode.Space))
-			{
-				if (c < 3) ++c; else c = 0;
-				color = (Color)c;
-			}
-
-			if (Input.GetKeyDown(KeyCode.LeftAlt))
-			{
-				if (t < 3) ++t; else t = 0;
-				print(type = (Type)t);
-			}
+		protected override void AddBulletData(ref Bullet.Data data)
+		{
 		}
 
 
 
-		public override void Explode()
+
+		bool s;
+		private void Update()
 		{
-			throw new System.NotImplementedException();
+			#region Input Move
+			Vector3 newDir = default; ;
+			if (Input.GetKey(KeyCode.W)) newDir = Vector3.up;
+			else if (Input.GetKey(KeyCode.D)) newDir = Vector3.right;
+			else if (Input.GetKey(KeyCode.S)) newDir = Vector3.down;
+			else if (Input.GetKey(KeyCode.A)) newDir = Vector3.left;
+
+			if (!isMoving && newDir != default)
+			{
+				if (direction != newDir) direction = newDir;
+				else if (CanMove(newDir)) Move(newDir).ContinueWith(() =>
+				{
+					if (s)
+					{
+						s = false;
+						Shoot();
+					}
+				});
+			}
+			#endregion
+
+			if (Input.GetKey(KeyCode.LeftShift))
+			{
+				if (!isMoving) Shoot();
+				else s = true;
+			}
 		}
 	}
 }

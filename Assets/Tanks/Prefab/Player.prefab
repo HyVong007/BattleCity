@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6896906760334767446}
   - component: {fileID: 2763602131919158516}
   - component: {fileID: 5129620389805022180}
+  - component: {fileID: -3395197748316579498}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -51,6 +52,8 @@ MonoBehaviour:
   animator: {fileID: 5129620389805022180}
   moveSpeed: 0.05
   delayMoving: 16
+  delayShooting: 1
+  maxBullets: 1
   sprites:
     reorderableList:
       canAdd: 1
@@ -417,7 +420,7 @@ MonoBehaviour:
         draggable: 1
         expandable: 1
         multipleSelection: 1
-        isExpanded: 0
+        isExpanded: 1
         label:
           m_Text: Keys
           m_Image: {fileID: 0}
@@ -433,7 +436,7 @@ MonoBehaviour:
         elementNameOverride: 
         elementIcon: {fileID: 0}
       reqReferences: {fileID: 0}
-      isExpanded: 0
+      isExpanded: 1
       _keyValues: 0000000003000000
       _keys: 0000000003000000
       _values:
@@ -472,7 +475,7 @@ MonoBehaviour:
         - {x: -1, y: 0, z: 0}
         _values:
         - {fileID: 9100000, guid: c4d7d7c90d75ea645817a5a08993ae87, type: 2}
-        - {fileID: 9100000, guid: 5eedf9acd0ea4db4cbec108339139391, type: 2}
+        - {fileID: 9100000, guid: ab53eb2cea15c2244a66a7056c68a794, type: 2}
         - {fileID: 9100000, guid: 3b47db4f720cd7747a79476ffaa34c56, type: 2}
         - {fileID: 9100000, guid: 3d6b2a8b684931f4483aa6f72764f94f, type: 2}
       - reorderableList:
@@ -793,3 +796,15 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-3395197748316579498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1904627074846725927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f63ce0fd6ed21af429c598b4c0cfed74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -44,13 +44,13 @@ namespace BattleCity
 			await UniTask.Yield();
 
 			// Sinh Enemy
-			enemyLifes = 30;
+			enemyLifes = 255;
 			for (int i = Main.mouseIndex == Main.ONE_PLAYER ? 3 : 6; i > 0; --i) Enemy.New();
 
 			// Sinh Player
 			if (count == 1)
 			{
-				playerLifes[Color.Yellow] = playerLifes[Color.Green] = 2;
+				playerLifes[Color.Yellow] = playerLifes[Color.Green] = 255;
 				twoPlayers = Main.mouseIndex != Main.ONE_PLAYER;
 			}
 			Player.New(Color.Yellow);

@@ -1,4 +1,5 @@
 ﻿using BattleCity.LevelEditors;
+using Cysharp.Threading.Tasks;
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -12,12 +13,18 @@ namespace BattleCity
 
 		public LevelEditor editor; // Test
 
-		private void Awake()
+		private async void Awake()
 		{
 			instance = instance ? throw new Exception() : this;
 			mousePointer.position = mousePositions[mouseIndex];
 			level = new(editor.CreateLevelFile()); // Test
 			Destroy(editor.gameObject);
+
+
+			// Test
+			await UniTask.Delay(3000);
+			mouseIndex = 1;
+			SceneManager.LoadScene("Battle Field");
 		}
 
 

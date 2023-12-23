@@ -1,18 +1,16 @@
-using BattleCity.LevelEditors;
-using Cysharp.Threading.Tasks;
+using BattleCity.Tanks;
 using UnityEngine;
 
 
 public class Test : MonoBehaviour
 {
-	private void Start()
+	private async void Awake()
 	{
-		var hehe = new Vector3();
-		hehe.X();
-		print(hehe);
+		var tank = GetComponent<Tank>();
+
+		for (int i = 0; i < 20; ++i) 
+			await tank.Move(Vector3.up);
 	}
-
-
 
 
 }

@@ -46,20 +46,28 @@ namespace BattleCity.Tanks
 
 		public bool canDestroySteel { get; private set; }
 
-		private IList<Bullet> tankCache;
+		private ValueWrapper<int> count;
 		[SerializeField] private SerializableDictionaryBase<Vector3, Sprite> sprites;
 
-		public static Bullet New(in Vector3 position, in Vector3 direction, in Color? color,
-			IList<Bullet> tankCache, bool canBurnForest, bool canDestroySteel)
+
+		public struct Data
 		{
-			var bullet = pool.Get(position);
-			bullet.direction = direction;
-			bullet.GetComponent<SpriteRenderer>().sprite = bullet.sprites[direction];
+			public Vector3 position, direction;
+			public Color? color;
+			public ValueWrapper<int> count;
+			public bool canBurnForest, canDestroySteel;
+		}
+
+		public static Bullet New(in Data data)
+		{
+			var bullet = pool.Get(data.position);
+			bullet.direction = data.direction;
+			bullet.GetComponent<SpriteRenderer>().sprite = bullet.sprites[data.direction];
 			bullet.getList.Add(bullet);
-			bullet.color = color;
-			(bullet.tankCache = tankCache).Add(bullet);
-			bullet.canBurnForest = canBurnForest;
-			bullet.canDestroySteel = canDestroySteel;
+			bullet.color = data.color;
+			bullet.count = data.count;
+			bullet.canBurnForest = data.canBurnForest;
+			bullet.canDestroySteel = data.canDestroySteel;
 			bullet.Move();
 			return bullet;
 		}
@@ -72,12 +80,13 @@ namespace BattleCity.Tanks
 			cts.Dispose();
 			cts = new();
 			getList.Remove(this);
-			tankCache.Remove(this);
+			--count.value;
 		}
 
 
 		public bool OnCollision(Bullet bullet)
 		{
+			if (color == null && bullet.color == null) return false;
 			pool.Recycle(this);
 			return true;
 		}
@@ -93,7 +102,10 @@ namespace BattleCity.Tanks
 			var origin = transform.position;
 			bool stop = false;
 			using var token = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, BattleField.Token);
-			
+			int floorCount = Mathf.FloorToInt(count);
+			if (count == floorCount) --floorCount;
+
+
 			while (true)
 			{
 				#region Check Platform
@@ -109,7 +121,7 @@ namespace BattleCity.Tanks
 
 				for (float i = 0; i < count; ++i)
 				{
-					if (i == 0 || i == halfCount)
+					if (i == 0 || i == halfCount || i == floorCount)
 						#region Check Tank
 						for (int v = 0; v < 3; ++v)
 						{
@@ -121,14 +133,12 @@ namespace BattleCity.Tanks
 					#endregion
 
 					#region Check Bullet
-					// Check List of "getList" property
 					tmp.Clear();
 					tmp.AddRange(getList);
 					foreach (var bullet in tmp)
 						if (this != bullet && (transform.position - bullet.transform.position).sqrMagnitude <= BULLET_BULLET_DISTANCE)
 							stop |= bullet.OnCollision(this);
 
-					// Check perpendicular List
 					tmp.Clear();
 					tmp.AddRange(Perpendicular(i < halfCount ? origin : origin + direction * 0.5f));
 					foreach (var bullet in tmp)
@@ -161,8 +171,8 @@ namespace BattleCity.Tanks
 				[Vector3.left] = new(new Vector3[] { new(-0.5f, 0.5f), new(-0.5f, 0), new(-0.5f, -0.5f), new(0, 0.5f), default, new(0, -0.5f) })
 			};
 
-		private static readonly float TANK_BULLET_DISTANCE = Mathf.Pow(0.5f + 0.125f, 2),
-			BULLET_BULLET_DISTANCE = Mathf.Pow(0.125f * 2, 2);
+		private static readonly float TANK_BULLET_DISTANCE = Mathf.Pow(0.71f + 0.2f, 2),
+			BULLET_BULLET_DISTANCE = Mathf.Pow(0.2f * 2, 2);
 	}
 
 
