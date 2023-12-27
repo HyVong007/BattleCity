@@ -11,7 +11,7 @@ namespace BattleCity.Items
 	[RequireComponent(typeof(SpriteRenderer), typeof(Animator))]
 	public abstract class Item : MonoBehaviour
 	{
-		public static Item current { get; private set; }
+		public static Item current; /*{ get; private set; }*/
 		private static readonly ReadOnlyArray<string> PREFAB_NAMES;
 
 		static Item()
@@ -60,6 +60,17 @@ namespace BattleCity.Items
 		}
 
 
+		public static T New<T>() where T : Item
+			=> Addressables.InstantiateAsync($"Assets/Items/Prefab/{typeof(T).Name}.prefab")
+			.WaitForCompletion().GetComponent<T>();
+
+
 		public abstract void OnCollision(Tank tank);
+
+
+		protected void OnDisable()
+		{
+			if (this == current) current = null;
+		}
 	}
 }

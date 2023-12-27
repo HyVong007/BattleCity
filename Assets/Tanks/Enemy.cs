@@ -2,6 +2,8 @@
 using Cysharp.Threading.Tasks;
 using RotaryHeart.Lib.SerializableDictionary;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -10,6 +12,11 @@ namespace BattleCity.Tanks
 {
 	public sealed class Enemy : Tank
 	{
+		/// <summary>
+		/// Không nên dùng foreach vì Enemy nổ sẽ bị loại khỏi list
+		/// </summary>
+		public static readonly IReadOnlyList<Enemy> enemies = new List<Enemy>();
+
 		public enum Type
 		{
 			Small, Fast, Big, Armored
@@ -132,8 +139,18 @@ namespace BattleCity.Tanks
 
 		private new void OnEnable()
 		{
+			x = i++; // Test
 			base.OnEnable();
+			(enemies as List<Enemy>).Add(this);
+			health = 2; // Test
 			weapon = Weapon.Normal;
+		}
+
+
+		private new void OnDisable()
+		{
+			base.OnDisable();
+			(enemies as List<Enemy>).Remove(this);
 		}
 
 
@@ -142,12 +159,17 @@ namespace BattleCity.Tanks
 			: anims[type][color][direction];
 
 
+		public int health;
 		public override bool OnCollision(Bullet bullet)
 		{
-			//if (bullet.color == null) return false;
-			Explode();
+			if (bullet.color == null) return false;
+
+			if (color == Color.Red) Item.New();
+			if (--health == 0) Explode();
+
 			return true;
 		}
+
 
 
 		public override async void Explode()
@@ -155,20 +177,23 @@ namespace BattleCity.Tanks
 			pool.Recycle(this);
 			await UniTask.Delay(1000);
 
-			New();
+			if (BattleField.enemyLifes != 0) New();
+			else if (enemies.Count == 0) BattleField.End();
 		}
 
 
 		protected override void AddBulletData(ref Bullet.Data data)
-		{
-		}
+			=> data.canDestroySteel = weapon != Weapon.Normal;
 
 
 
 
 		bool s;
+		static int i;
+		int x;
 		private void Update()
 		{
+			if (x != 0) return;
 			#region Input Move
 			Vector3 newDir = default; ;
 			if (Input.GetKey(KeyCode.W)) newDir = Vector3.up;

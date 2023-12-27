@@ -1,20 +1,41 @@
 ﻿using BattleCity.Tanks;
-using System;
+using RotaryHeart.Lib.SerializableDictionary;
+using UnityEngine;
 
 
 namespace BattleCity.Items
 {
 	public sealed class Ship : Item
 	{
-		public override void OnCollision(Tank tank)
+		[SerializeField]
+		[HideInInspector]
+		private SpriteRenderer spriteRenderer;
+		private void Reset()
 		{
-			throw new System.NotImplementedException();
+			spriteRenderer = GetComponent<SpriteRenderer>();
 		}
 
 
+		public override void OnCollision(Tank tank)
+		{
+			if (tank.ship)
+			{
+				Destroy(gameObject);
+				return;
+			}
+
+			if (this == current) current = null;
+			tank.ship = this;
+			transform.parent = tank.transform;
+			transform.localPosition = default;
+			ChangeColor(tank.color);
+		}
+
+
+		[SerializeField] private SerializableDictionaryBase<Color, Sprite> sprites;
 		public void ChangeColor(Color color)
 		{
-			throw new NotImplementedException();
+			spriteRenderer.sprite = sprites[color];
 		}
 	}
 }

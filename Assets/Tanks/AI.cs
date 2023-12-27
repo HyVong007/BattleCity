@@ -1,23 +1,36 @@
 ﻿using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 
 namespace BattleCity.Tanks
 {
 	public sealed class AI : MonoBehaviour
 	{
-		private Tank tank;
-		private void Awake()
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+		private static void Init()
 		{
-			tank = GetComponent<Tank>();
+			BattleField.onAwake += () => enableEnemy = true;
 		}
 
 
+		private Tank tank;
+		private bool isPlayer;
+		private void Awake()
+		{
+			isPlayer = (tank = GetComponent<Tank>()) is Player;
+			dict[isPlayer].Add(this);
+		}
+
+
+		private static bool enableEnemy;
 		private void OnEnable()
 		{
-			MoveAndShoot();
+			if (isPlayer || enableEnemy) MoveAndShoot();
+			else enabled = false;
 		}
 
 
@@ -27,6 +40,38 @@ namespace BattleCity.Tanks
 			cts.Cancel();
 			cts.Dispose();
 			cts = new();
+		}
+
+
+		private void OnDestroy()
+		{
+			dict[isPlayer].Remove(this);
+		}
+
+
+		private static readonly IReadOnlyDictionary<bool, List<AI>> dict = new Dictionary<bool, List<AI>>
+		{
+			[true] = new(),
+			[false] = new()
+		};
+		public static void SetActive<T>(bool value) where T : Tank
+		{
+			bool isPlayer = typeof(T) == typeof(Player);
+			if (isPlayer)
+				foreach (var ai in dict[isPlayer])
+				{
+					if (!ai.gameObject.activeSelf) continue;
+
+					ai.cts.Cancel();
+					ai.cts.Dispose();
+					ai.cts = new();
+					if (value) ai.MoveAndShoot(); else ai.AutoShoot();
+				}
+			else
+			{
+				enableEnemy = value;
+				foreach (var ai in dict[!isPlayer]) ai.enabled = value;
+			}
 		}
 
 
@@ -74,6 +119,12 @@ namespace BattleCity.Tanks
 			{
 				if (Random.Range(0, 2) == 0) tank.Shoot();
 			}
+		}
+
+
+		private async void AutoShoot()
+		{
+			using var token = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, tank.Token, BattleField.Token);
 		}
 	}
 }

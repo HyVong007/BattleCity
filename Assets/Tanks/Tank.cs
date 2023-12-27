@@ -26,7 +26,7 @@ namespace BattleCity.Tanks
 
 		public float speed { get; protected set; }
 
-		public Ship ship { get; protected set; }
+		public Ship ship;
 
 		[SerializeField]
 		[HideInInspector]
@@ -150,6 +150,7 @@ namespace BattleCity.Tanks
 			Δarray[index.x][index.y] = this;
 			dir *= moveSpeed;
 			animator.runtimeAnimatorController = anim;
+
 			for (float i = 0.5f / moveSpeed; i > 0; --i)
 			{
 				transform.position += dir;

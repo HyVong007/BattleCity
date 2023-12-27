@@ -102,8 +102,6 @@ namespace BattleCity.Tanks
 			var origin = transform.position;
 			bool stop = false;
 			using var token = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, BattleField.Token);
-			int floorCount = Mathf.FloorToInt(count);
-			if (count == floorCount) --floorCount;
 
 
 			while (true)
@@ -121,7 +119,7 @@ namespace BattleCity.Tanks
 
 				for (float i = 0; i < count; ++i)
 				{
-					if (i == 0 || i == halfCount || i == floorCount)
+					if (i == 0 || i == halfCount)
 						#region Check Tank
 						for (int v = 0; v < 3; ++v)
 						{

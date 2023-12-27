@@ -4,19 +4,14 @@ using UnityEngine;
 
 public class Test : MonoBehaviour
 {
-	private async void Awake()
+	private void Start()
 	{
-		var tank = GetComponent<Tank>();
-
-		for (int i = 0; i < 20; ++i) 
-			await tank.Move(Vector3.up);
+		A<Tank>();
 	}
 
 
-}
-
-
-public static class A
-{
-	public static void X(this ref Vector3 v) => v = new(456, 789);
+	private void A<T>()
+	{
+		print(typeof(T) == typeof(Player));
+	}
 }

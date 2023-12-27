@@ -1,4 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using BattleCity.Items;
+using Cysharp.Threading.Tasks;
 using RotaryHeart.Lib.SerializableDictionary;
 using System;
 using System.Collections.Generic;
@@ -56,7 +57,6 @@ namespace BattleCity.Tanks
 			// Animation
 
 			var player = players[color];
-			if (player.isExploded) player.star = 0;
 			player.transform.position = Main.level.playerIndexes[color].ToVector3();
 			player.gameObject.SetActive(true);
 			return player;
@@ -104,25 +104,69 @@ namespace BattleCity.Tanks
 		}
 
 
-		private int Δstar;
-		public int star
+		private byte star, fireStar;
+		public void IncreaseStar(byte value)
 		{
-			get => Δstar;
-
-			set
+			star += value;
+			if (star < 3) spriteRenderer.sprite = sprites[star][color][direction];
+			else
 			{
-				Δstar = value;
-				spriteRenderer.sprite = star == 3 ? asset.gunSprites[color][direction]
-					: sprites[star][color][direction];
+				star = 3;
+				spriteRenderer.sprite = asset.gunSprites[color][direction];
 			}
+
+			fireStar += value;
+			if (fireStar >= 7)
+			{
+				canBurnForest = false;
+				fireStar = star;
+			}
+			else if (fireStar >= 5) canBurnForest = true;
 		}
 
 
+		public Helmet helmet;
+		private bool canBurnForest;
 		public override bool OnCollision(Bullet bullet)
 		{
-			Explode();
+			if (helmet) return true;
+
+			if (bullet.color != null)
+			{
+				// Player bullet
+				if (!Setting.playerCanFreezePlayer) return false;
+				Freeze();
+				return true;
+			}
+
+			// Enemy bullet
+			if (ship)
+			{
+				Destroy(ship.gameObject);
+				ship = null;
+			}
+			else
+			{
+				canBurnForest = false;
+				if (star == 3)
+				{
+					fireStar = star = 2;
+					spriteRenderer.sprite = sprites[star][color][direction];
+				}
+				else
+				{
+					fireStar = 0;
+					Explode();
+				}
+			}
 
 			return true;
+		}
+
+
+		private async void Freeze()
+		{
+			throw new NotImplementedException();
 		}
 
 
@@ -130,23 +174,35 @@ namespace BattleCity.Tanks
 		{
 			base.OnEnable();
 			isExploded = false;
+			helmet = null;
+			Item.New<Helmet>().OnCollision(this);
+
+			// Đăng ký input move và shoot
 		}
 
 
 		public bool isExploded { get; private set; }
 		public override async void Explode()
 		{
+			star = 0;
+			spriteRenderer.sprite = sprites[star][color][direction];
 			gameObject.SetActive(false);
+
+			// Animation
+
 			await UniTask.Delay(1000);
 
-			New(color);
+			if (BattleField.playerLifes[color] != 0
+				|| BattleField.playerLifes[3 - color] != 0) New(color);
+			else if (!players[3 - color].gameObject.activeSelf) BattleField.End();
 		}
 
 
 		protected override void AddBulletData(ref Bullet.Data data)
 		{
+			data.canBurnForest = canBurnForest;
+			data.canDestroySteel = star == 3;
 		}
-
 
 
 		bool s;

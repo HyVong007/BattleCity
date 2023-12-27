@@ -7,7 +7,17 @@ namespace BattleCity.Items
 	{
 		public override void OnCollision(Tank tank)
 		{
-			throw new System.NotImplementedException();
+			if (tank is Player) while (Enemy.enemies.Count != 0) Enemy.enemies[0].Explode();
+			else
+			{
+				if (Player.players[Color.Yellow].gameObject.activeSelf)
+					Player.players[Color.Yellow].Explode();
+
+				if (Player.players[Color.Green].gameObject.activeSelf)
+					Player.players[Color.Green].Explode();
+			}
+
+			Destroy(gameObject);
 		}
 	}
 }

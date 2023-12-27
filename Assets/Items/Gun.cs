@@ -7,7 +7,10 @@ namespace BattleCity.Items
 	{
 		public override void OnCollision(Tank tank)
 		{
-			throw new System.NotImplementedException();
+			if (tank is Player) (tank as Player).IncreaseStar(3);
+			else (tank as Enemy).weapon = Enemy.Weapon.Gun;
+
+			Destroy(gameObject);
 		}
 	}
 }

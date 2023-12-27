@@ -1,4 +1,5 @@
-﻿using BattleCity.Platforms;
+﻿using BattleCity.Items;
+using BattleCity.Platforms;
 using BattleCity.Tanks;
 using Cysharp.Threading.Tasks;
 using System;
@@ -45,7 +46,9 @@ namespace BattleCity
 
 			// Sinh Enemy
 			enemyLifes = 255;
-			for (int i = Main.mouseIndex == Main.ONE_PLAYER ? 3 : 6; i > 0; --i) Enemy.New();
+			/*for (int i = Main.mouseIndex == Main.ONE_PLAYER ? 3 : 6; i > 0; --i)*/
+			Enemy.New();
+			Enemy.New();
 
 			// Sinh Player
 			if (count == 1)
@@ -67,7 +70,6 @@ namespace BattleCity
 			cts.Dispose();
 			cts = new();
 
-			throw new NotImplementedException();
 		}
 
 

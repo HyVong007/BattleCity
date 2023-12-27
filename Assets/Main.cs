@@ -21,10 +21,10 @@ namespace BattleCity
 			Destroy(editor.gameObject);
 
 
-			// Test
-			await UniTask.Delay(3000);
-			mouseIndex = 1;
-			SceneManager.LoadScene("Battle Field");
+			//// Test
+			//await UniTask.Delay(3000);
+			//mouseIndex = 1;
+			//SceneManager.LoadScene("Battle Field");
 		}
 
 

@@ -1,13 +1,83 @@
-﻿using BattleCity.Tanks;
+﻿using BattleCity.Platforms;
+using BattleCity.Tanks;
+using Cysharp.Threading.Tasks;
+using RotaryHeart.Lib.SerializableDictionary;
+using System.Threading;
+using UnityEditor.SceneManagement;
+using UnityEngine;
 
 
 namespace BattleCity.Items
 {
 	public sealed class Shovel : Item
 	{
+		private static Shovel workingShovel;
+		private static bool isPlayerCollided;
 		public override void OnCollision(Tank tank)
 		{
-			throw new System.NotImplementedException();
+			stopTime = Time.time + delay;
+			if (workingShovel)
+				if ((tank is Player) == isPlayerCollided)
+				{
+					Destroy(gameObject);
+					return;
+				}
+				else
+				{
+					cts.Cancel();
+					cts.Dispose();
+					cts = new();
+				}
+
+			isPlayerCollided = tank is Player;
+			Task();
+		}
+
+
+		private static CancellationTokenSource cts = new();
+		private static float stopTime;
+		[SerializeField] private float delay;
+
+		[Tooltip("[dir][0] : Steel ID. [dir][1]: Brick ID")]
+		[SerializeField] private SerializableDictionaryBase<Vector3, ReadOnlyArray<int>> DIR_ID;
+
+		private async void Task()
+		{
+			workingShovel = this;
+			if (this == current) current = null;
+			gameObject.SetActive(false);
+			using var token = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, BattleField.Token);
+			var origin = Eagle.instance.transform.position;
+
+		LOOP:
+			// Modify platform
+			foreach (var kvp in DIR_ID)
+			{
+				var pos = origin + kvp.Key;
+				var platform = Platform.platforms[(int)pos.x][(int)pos.y];
+				if (platform)
+					if (platform is Border) continue;
+					else Destroy(platform.gameObject);
+
+				if (token.IsCancellationRequested) Platform.New(kvp.Value[1], pos);
+				else if (isPlayerCollided) Platform.New(kvp.Value[0], pos);
+			}
+
+			// Wait
+			while (!token.IsCancellationRequested && Time.time < stopTime)
+				await UniTask.DelayFrame(1);
+			if (token.IsCancellationRequested)
+				if (this)
+				{
+					Destroy(gameObject);
+					if (workingShovel == this) workingShovel = null;
+				}
+
+			// Modify platform (with minor changes) => Exit
+			cts.Cancel();
+			cts.Dispose();
+			cts = new();
+			goto LOOP;
 		}
 	}
 }
