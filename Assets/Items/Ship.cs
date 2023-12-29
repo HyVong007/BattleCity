@@ -28,6 +28,8 @@ namespace BattleCity.Items
 			tank.ship = this;
 			transform.parent = tank.transform;
 			transform.localPosition = default;
+			GetComponent<Animator>().enabled = false;
+			spriteRenderer.enabled = true;
 			ChangeColor(tank.color);
 		}
 

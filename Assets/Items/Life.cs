@@ -9,6 +9,8 @@ namespace BattleCity.Items
 		{
 			if (tank is Player) ++BattleField.playerLifes[tank.color];
 			else foreach (var e in Enemy.enemies) ++e.health;
+
+			Destroy(gameObject);
 		}
 	}
 }

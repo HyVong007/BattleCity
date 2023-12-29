@@ -155,7 +155,11 @@ namespace BattleCity.Tanks
 			{
 				transform.position += dir;
 				await (moveTask = UniTask.Delay(delayMoving));
-				if (token.IsCancellationRequested) return;
+				if (token.IsCancellationRequested)
+				{
+					if (this) animator.runtimeAnimatorController = null;
+					return;
+				}
 			}
 			transform.position = new(index.x * 0.5f, index.y * 0.5f);
 

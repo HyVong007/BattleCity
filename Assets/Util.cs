@@ -177,14 +177,9 @@ namespace BattleCity
 
 		public ObjectPool(T prefab)
 		{
-			this.prefab = prefab;
-			gameObject = new() { name = $"{prefab.name} Pool" };
-			hiddenAnchor = new GameObject().transform;
-			hiddenAnchor.name = "Hidden";
-			hiddenAnchor.SetParent(gameObject.transform);
-			visibleAnchor = new GameObject().transform;
-			visibleAnchor.name = "Visible";
-			visibleAnchor.SetParent(gameObject.transform);
+			gameObject = new() { name = $"{(this.prefab = prefab).name} Pool" };
+			(hiddenAnchor = new GameObject { name = "Hidden" }.transform).SetParent(gameObject.transform);
+			(visibleAnchor = new GameObject { name = "Visible" }.transform).SetParent(gameObject.transform);
 		}
 
 

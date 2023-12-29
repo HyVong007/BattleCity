@@ -103,7 +103,6 @@ namespace BattleCity.Tanks
 			bool stop = false;
 			using var token = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, BattleField.Token);
 
-
 			while (true)
 			{
 				#region Check Platform

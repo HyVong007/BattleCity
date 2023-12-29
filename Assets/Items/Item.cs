@@ -11,7 +11,7 @@ namespace BattleCity.Items
 	[RequireComponent(typeof(SpriteRenderer), typeof(Animator))]
 	public abstract class Item : MonoBehaviour
 	{
-		public static Item current; /*{ get; private set; }*/
+		public static Item current { get; protected set; }
 		private static readonly ReadOnlyArray<string> PREFAB_NAMES;
 
 		static Item()
@@ -50,7 +50,7 @@ namespace BattleCity.Items
 			{
 				var index = origin + VECTORS[v];
 				var tank = Tank.tanks[index.x][index.y];
-				if (tank) tmp.Add(tank);
+				if (tank && (tank is Player || Setting.enemyCanPickItem)) tmp.Add(tank);
 			}
 
 			if (tmp.Count != 0) current.OnCollision(tmp[Random.Range(0, tmp.Count)]);

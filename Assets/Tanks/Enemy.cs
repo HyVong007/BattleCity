@@ -13,7 +13,7 @@ namespace BattleCity.Tanks
 	public sealed class Enemy : Tank
 	{
 		/// <summary>
-		/// Không nên dùng foreach vì Enemy nổ sẽ bị loại khỏi list
+		/// Cẩn thận khi dùng foreach vì Enemy nổ sẽ bị loại khỏi list
 		/// </summary>
 		public static readonly IReadOnlyList<Enemy> enemies = new List<Enemy>();
 
@@ -79,15 +79,10 @@ namespace BattleCity.Tanks
 
 			set
 			{
-				spriteRenderer.sprite =
-					isActiveAndEnabled &&
-					(Δweapon == Weapon.Star && value == Weapon.Normal)
-					|| (Δweapon == Weapon.Gun && value != Weapon.Gun)
-					? throw new InvalidOperationException()
-					: value == Weapon.Gun ? asset.gunSprites[color][direction]
+				spriteRenderer.sprite = (Δweapon = value) == Weapon.Gun
+					? asset.gunSprites[color][direction]
 					: sprites[type][color][direction];
 
-				Δweapon = value;
 				//moveSpeed = value == Weapon.Gun
 				//? Extensions.Load<GlobalAsset>().enemyStat.moveSpeed[Type.Armored]
 				//: Extensions.Load<GlobalAsset>().enemyStat.moveSpeed[type];
@@ -115,12 +110,13 @@ namespace BattleCity.Tanks
 
 
 		private static int shipCount;
-		public static Enemy New()
+		public static async UniTask<Enemy> New()
 		{
+			var token = BattleField.Token;
+			await UniTask.Delay(1000); // Animation
+			if (token.IsCancellationRequested) return null;
+
 			if (BattleField.enemyLifes == 0) return null;
-
-			// animation
-
 			--BattleField.enemyLifes;
 			var enemy = pool.Get(Main.level.enemyIndexes[UnityEngine.Random.Range
 				(0, Main.level.enemyIndexes.Length)].ToVector3(), false);

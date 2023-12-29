@@ -34,7 +34,7 @@ namespace BattleCity.Items
 			using var token = CancellationTokenSource.CreateLinkedTokenSource(player.Token, BattleField.Token);
 			if (this == current) current = null;
 			transform.parent = player.transform;
-			transform.position = default;
+			transform.localPosition = default;
 			GetComponent<Animator>().runtimeAnimatorController = anims[player.color];
 			player.helmet = this;
 			stopTime = Time.time + delay;
@@ -42,7 +42,7 @@ namespace BattleCity.Items
 			do await UniTask.DelayFrame(1);
 			while (!token.IsCancellationRequested && Time.time < stopTime);
 			if (!token.IsCancellationRequested) player.helmet = null;
-			Destroy(gameObject);
+			if (this) Destroy(gameObject);
 		}
 	}
 }

@@ -3,7 +3,6 @@ using BattleCity.Tanks;
 using Cysharp.Threading.Tasks;
 using RotaryHeart.Lib.SerializableDictionary;
 using System.Threading;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 
@@ -47,33 +46,38 @@ namespace BattleCity.Items
 			if (this == current) current = null;
 			gameObject.SetActive(false);
 			using var token = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, BattleField.Token);
-			var origin = Eagle.instance.transform.position;
 
 		LOOP:
 			// Modify platform
-			foreach (var kvp in DIR_ID)
+			foreach (var eagle in Eagle.list)
 			{
-				var pos = origin + kvp.Key;
-				var platform = Platform.platforms[(int)pos.x][(int)pos.y];
-				if (platform)
-					if (platform is Border) continue;
-					else Destroy(platform.gameObject);
+				var origin = eagle.transform.position;
+				foreach (var kvp in DIR_ID)
+				{
+					var pos = origin + kvp.Key;
+					var platform = Platform.platforms[(int)pos.x][(int)pos.y];
+					if (platform)
+						if (platform is Border || platform is Eagle) continue;
+						else Destroy(platform.gameObject);
 
-				if (token.IsCancellationRequested) Platform.New(kvp.Value[1], pos);
-				else if (isPlayerCollided) Platform.New(kvp.Value[0], pos);
+					if (token.IsCancellationRequested) Platform.New(kvp.Value[1], pos);
+					else if (isPlayerCollided) Platform.New(kvp.Value[0], pos);
+				}
 			}
 
 			// Wait
-			while (!token.IsCancellationRequested && Time.time < stopTime)
-				await UniTask.DelayFrame(1);
+			while (!token.IsCancellationRequested && Time.time < stopTime) await UniTask.DelayFrame(1);
 			if (token.IsCancellationRequested)
+			{
 				if (this)
 				{
 					Destroy(gameObject);
 					if (workingShovel == this) workingShovel = null;
 				}
+				return;
+			}
 
-			// Modify platform (with minor changes) => Exit
+			// Goto modify platform (with minor changes) => Exit
 			cts.Cancel();
 			cts.Dispose();
 			cts = new();

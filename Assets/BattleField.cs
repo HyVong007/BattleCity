@@ -1,11 +1,11 @@
-﻿using BattleCity.Items;
-using BattleCity.Platforms;
+﻿using BattleCity.Platforms;
 using BattleCity.Tanks;
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 
@@ -31,9 +31,12 @@ namespace BattleCity
 		{
 			instance = instance ? throw new Exception() : this;
 			++count;
+			cts.Dispose();
+			cts = new();
 			Platform.LoadLevel(Main.level);
 			Camera.main.transform.position = new Vector3(Main.level.width / 2f, Main.level.height / 2f, -10f);
 			Camera.main.orthographicSize = Main.level.height / 2f;
+			Camera.main.rect = new(0, 0, 0.9f, 1);
 			// Đăng ký nút bấm gamepad: người chơi nhấn nút mượn mạng khi đã chết
 			onAwake();
 		}
@@ -46,9 +49,7 @@ namespace BattleCity
 
 			// Sinh Enemy
 			enemyLifes = 255;
-			/*for (int i = Main.mouseIndex == Main.ONE_PLAYER ? 3 : 6; i > 0; --i)*/
-			Enemy.New();
-			Enemy.New();
+			for (int i = Main.mouseIndex == Main.ONE_PLAYER ? 3 : 6; i > 0; --i) Enemy.New();
 
 			// Sinh Player
 			if (count == 1)
@@ -64,12 +65,31 @@ namespace BattleCity
 		private static CancellationTokenSource cts = new();
 		public static CancellationToken Token => cts.Token;
 
-		public static void End()
+		public static async void End()
 		{
-			cts.Cancel();
-			cts.Dispose();
-			cts = new();
+			if (cts.IsCancellationRequested) return;
+			await UniTask.Delay(3000);
+			if (cts.IsCancellationRequested) return;
 
+			cts.Cancel();
+			if (Eagle.hasDead) count = 0;
+			else
+			{
+				bool playerLive = false;
+				foreach (var color in new Color[] { Color.Yellow, Color.Green })
+					if (playerLifes[color] != 0 || Player.players[color].gameObject.activeSelf)
+					{
+						playerLive = true;
+						break;
+					}
+
+				count = playerLive ? count : 0;
+			}
+
+			foreach (var color in new Color[] { Color.Yellow, Color.Green })
+				Player.players[color].gameObject.SetActive(false);
+
+			SceneManager.LoadScene("Score Board");
 		}
 
 

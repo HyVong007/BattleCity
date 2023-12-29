@@ -48,6 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   asset: {fileID: 11400000, guid: d1154ab3e81ce364c98c73e5387e356b, type: 2}
+  ship: {fileID: 0}
   spriteRenderer: {fileID: 8329736824220358606}
   animator: {fileID: 3041620526362212051}
   moveSpeed: 0.05
@@ -1532,6 +1533,7 @@ MonoBehaviour:
         - {fileID: 9100000, guid: 22688b074e928614a9c66ed69b74ddb4, type: 2}
         - {fileID: 9100000, guid: d5d7fb8dda7a42647b1a2dac5b65d2f9, type: 2}
         - {fileID: 9100000, guid: d741be6085fd26546bb772ead65c6d0c, type: 2}
+  health: 1
 --- !u!114 &-5903050652514361540
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1539,7 +1541,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9061587772578720950}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f63ce0fd6ed21af429c598b4c0cfed74, type: 3}
   m_Name: 

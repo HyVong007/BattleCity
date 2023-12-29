@@ -1,4 +1,5 @@
 ﻿using BattleCity.Items;
+using BattleCity.Platforms;
 using Cysharp.Threading.Tasks;
 using RotaryHeart.Lib.SerializableDictionary;
 using System;
@@ -30,8 +31,12 @@ namespace BattleCity.Tanks
 		}
 
 
-		public static Player New(Color color, bool borrowLife = false)
+		public static async UniTask<Player> New(Color color, bool borrowLife = false)
 		{
+			var token = BattleField.Token;
+			await UniTask.Delay(1000); // Animation
+			if (token.IsCancellationRequested) return null;
+
 			if (BattleField.count == 1) goto CHECK_LIFE;
 			if (players[color].isExploded) goto CHECK_LIFE;
 			goto SPAWN_PLAYER;
@@ -54,10 +59,12 @@ namespace BattleCity.Tanks
 			return null;
 
 		SPAWN_PLAYER:
-			// Animation
+			var pos= Main.level.playerIndexes[color].ToVector3();
+			try { Destroy(Platform.platforms[(int)pos.x][(int)pos.y].gameObject); }
+			catch { }
 
 			var player = players[color];
-			player.transform.position = Main.level.playerIndexes[color].ToVector3();
+			player.transform.position = pos;
 			player.gameObject.SetActive(true);
 			return player;
 		}

@@ -46,6 +46,58 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acfb58bf12917f149beec7f863cc221b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  delay: 5
+  DIR_ID:
+    reorderableList:
+      canAdd: 1
+      canRemove: 1
+      draggable: 1
+      expandable: 1
+      multipleSelection: 1
+      isExpanded: 0
+      label:
+        m_Text: Keys
+        m_Image: {fileID: 0}
+        m_Tooltip: 
+        m_TextWithWhitespace: "Keys\u200B"
+      headerHeight: 18
+      footerHeight: 13
+      slideEasing: 0.15
+      verticalSpacing: 2
+      showDefaultBackground: 1
+      elementDisplayType: 0
+      elementNameProperty: 
+      elementNameOverride: 
+      elementIcon: {fileID: 0}
+    reqReferences: {fileID: 0}
+    isExpanded: 0
+    _keyValues:
+    - {x: 0, y: 1, z: 0}
+    - {x: 1, y: 1, z: 0}
+    - {x: 1, y: 0, z: 0}
+    - {x: 1, y: -1, z: 0}
+    - {x: 0, y: -1, z: 0}
+    - {x: -1, y: -1, z: 0}
+    - {x: -1, y: 0, z: 0}
+    - {x: -1, y: 1, z: 0}
+    _keys:
+    - {x: 0, y: 1, z: 0}
+    - {x: 1, y: 1, z: 0}
+    - {x: 1, y: 0, z: 0}
+    - {x: 1, y: -1, z: 0}
+    - {x: 0, y: -1, z: 0}
+    - {x: -1, y: -1, z: 0}
+    - {x: -1, y: 0, z: 0}
+    - {x: -1, y: 1, z: 0}
+    _values:
+    - array: 1200000009000000
+    - array: 0d00000004000000
+    - array: 0b00000002000000
+    - array: 0c00000003000000
+    - array: 1100000008000000
+    - array: 0f00000006000000
+    - array: 0e00000005000000
+    - array: 1000000007000000
 --- !u!212 &1567818530088568549
 SpriteRenderer:
   m_ObjectHideFlags: 0

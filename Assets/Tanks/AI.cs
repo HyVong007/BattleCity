@@ -70,7 +70,7 @@ namespace BattleCity.Tanks
 			else
 			{
 				enableEnemy = value;
-				foreach (var ai in dict[!isPlayer]) ai.enabled = value;
+				foreach (var ai in dict[isPlayer]) ai.enabled = value;
 			}
 		}
 

@@ -46,6 +46,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82bb1dae0e00c644697b25fcb9c074ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 2072536904458031950}
+  sprites:
+    reorderableList:
+      canAdd: 1
+      canRemove: 1
+      draggable: 1
+      expandable: 1
+      multipleSelection: 1
+      isExpanded: 0
+      label:
+        m_Text: Keys
+        m_Image: {fileID: 0}
+        m_Tooltip: 
+        m_TextWithWhitespace: "Keys\u200B"
+      headerHeight: 18
+      footerHeight: 13
+      slideEasing: 0.15
+      verticalSpacing: 2
+      showDefaultBackground: 1
+      elementDisplayType: 0
+      elementNameProperty: 
+      elementNameOverride: 
+      elementIcon: {fileID: 0}
+    reqReferences: {fileID: 0}
+    isExpanded: 0
+    _keyValues: 00000000010000000200000003000000
+    _keys: 00000000010000000200000003000000
+    _values:
+    - {fileID: 21300000, guid: 807911b5aab8fbe49a2cf59e1ead3965, type: 3}
+    - {fileID: 21300000, guid: b9b8782ec00c1f44d860ba5581add163, type: 3}
+    - {fileID: 21300000, guid: 61f6f3758ca603e48ac495291a8873a0, type: 3}
+    - {fileID: 21300000, guid: b072fa32367026948827fb08c2acdf63, type: 3}
 --- !u!212 &2072536904458031950
 SpriteRenderer:
   m_ObjectHideFlags: 0

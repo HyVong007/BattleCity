@@ -11,6 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scene/Battle Field.unity
     guid: ae813d555b72ef349995c9be6b5c700b
+  - enabled: 1
+    path: Assets/Scene/Score Board.unity
+    guid: 78e80c61951afcd4098b7d4c23d23e4e
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 536bb0c94e2a4a74492ae70aa7a116ba, type: 2}
   m_UseUCBPForAssetBundles: 0
