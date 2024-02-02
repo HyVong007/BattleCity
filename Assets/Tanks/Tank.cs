@@ -12,7 +12,7 @@ namespace BattleCity.Tanks
 	[RequireComponent(typeof(SpriteRenderer), typeof(Animator))]
 	public abstract class Tank : MonoBehaviour, IBulletCollision
 	{
-		public static ReadOnlyArray<ReadOnlyArray<Tank>> tanks { get; private set; }
+		public static ReadOnlyArray<ReadOnlyArray<Tank>> array { get; private set; }
 		protected static Tank[][] Δarray;
 
 
@@ -42,7 +42,7 @@ namespace BattleCity.Tanks
 		{
 			BattleField.onAwake += () =>
 			{
-				tanks = Util.NewReadOnlyArray(Main.level.width * 2,
+				array = Util.NewReadOnlyArray(Main.level.width * 2,
 					Main.level.height * 2, out Δarray);
 			};
 		}
@@ -64,7 +64,7 @@ namespace BattleCity.Tanks
 
 			#region Check Item
 			if (Item.current && (Setting.enemyCanPickItem || this is Player)
-				&& (Item.current.transform.position - transform.position).sqrMagnitude < 1)
+				&& (Item.current.transform.position - transform.position).sqrMagnitude <= 0.5f)
 				Item.current.OnCollision(this);
 			#endregion
 
@@ -104,7 +104,7 @@ namespace BattleCity.Tanks
 			for (int v = 0; v < vectors.Length; ++v)
 			{
 				var pos = origin + vectors[v];
-				if (tanks[(int)(pos.x * 2)][(int)(pos.y * 2)]) return false;
+				if (array[(int)(pos.x * 2)][(int)(pos.y * 2)]) return false;
 				if (pos.ToVector3Int() != pos) continue;
 
 				var platform = Platform.platforms[(int)pos.x][(int)pos.y];
@@ -150,7 +150,6 @@ namespace BattleCity.Tanks
 			Δarray[index.x][index.y] = this;
 			dir *= moveSpeed;
 			animator.runtimeAnimatorController = anim;
-
 			for (float i = 0.5f / moveSpeed; i > 0; --i)
 			{
 				transform.position += dir;
@@ -162,18 +161,17 @@ namespace BattleCity.Tanks
 				}
 			}
 			transform.position = new(index.x * 0.5f, index.y * 0.5f);
+			animator.runtimeAnimatorController = null;
 
 			#region Check Item
 			if (Item.current && (Setting.enemyCanPickItem || this is Player)
-				&& (Item.current.transform.position - transform.position).sqrMagnitude < 1)
+				&& (Item.current.transform.position - transform.position).sqrMagnitude <= 0.5f)
 				Item.current.OnCollision(this);
 			#endregion
 
 			#region Check Special Platform
 
 			#endregion
-
-			animator.runtimeAnimatorController = null;
 		}
 		#endregion
 
@@ -187,6 +185,9 @@ namespace BattleCity.Tanks
 
 		public Bullet Shoot()
 		{
+#if DEBUG
+			if (isMoving) throw new Exception("Không thể Shoot khi đang Move !");
+#endif
 			if (bulletCount.value >= maxBullets
 				|| Time.time - lastShootingTime < delayShooting) return null;
 

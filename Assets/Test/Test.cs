@@ -1,17 +1,14 @@
-using BattleCity.Tanks;
 using UnityEngine;
 
 
 public class Test : MonoBehaviour
 {
+	public A prefab;
 	private void Start()
 	{
-		A<Tank>();
-	}
-
-
-	private void A<T>()
-	{
-		print(typeof(T) == typeof(Player));
+		var anchor = new GameObject().transform;
+		anchor.gameObject.SetActive(false);
+		var a = Instantiate(prefab, anchor);
+		a.gameObject.SetActive(false);
 	}
 }

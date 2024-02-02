@@ -123,7 +123,7 @@ namespace BattleCity.Tanks
 						for (int v = 0; v < 3; ++v)
 						{
 							var pos = origin + vectors[v];
-							var tank = Tank.tanks[(int)(pos.x * 2)][(int)(pos.y * 2)];
+							var tank = Tank.array[(int)(pos.x * 2)][(int)(pos.y * 2)];
 							if (tank && (tank.transform.position - transform.position).sqrMagnitude <= TANK_BULLET_DISTANCE)
 								stop |= tank.OnCollision(this);
 						}
@@ -148,6 +148,7 @@ namespace BattleCity.Tanks
 						pool.Recycle(this);
 						return;
 					}
+
 					transform.position += dir;
 					await UniTask.Delay(delay);
 					if (token.IsCancellationRequested) return;

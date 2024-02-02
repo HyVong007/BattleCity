@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &3865543948902024557
 Transform:
   m_ObjectHideFlags: 0
@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   asset: {fileID: 11400000, guid: d1154ab3e81ce364c98c73e5387e356b, type: 2}
+  ship: {fileID: 0}
   spriteRenderer: {fileID: 2763602131919158516}
   animator: {fileID: 5129620389805022180}
   moveSpeed: 0.05
@@ -719,6 +720,7 @@ MonoBehaviour:
         - {fileID: 9100000, guid: 1a5c7290bb403954b8eabd7f4e109b5e, type: 2}
         - {fileID: 9100000, guid: dd5d8e61841e998409aaed9aec231bf2, type: 2}
         - {fileID: 9100000, guid: 2137993e87cda7c47a0dbd3eedd2149d, type: 2}
+  helmet: {fileID: 0}
 --- !u!212 &2763602131919158516
 SpriteRenderer:
   m_ObjectHideFlags: 0

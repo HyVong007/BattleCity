@@ -11,7 +11,11 @@ namespace BattleCity.Items
 	{
 		public override void OnCollision(Tank tank)
 		{
-			if (tank is Enemy) foreach (var e in Enemy.enemies) ++e.health;
+			if (tank is Enemy)
+			{
+				foreach (var e in Enemy.enemies) ++e.health;
+				Destroy(gameObject);
+			}
 			else
 			{
 				var player = tank as Player;

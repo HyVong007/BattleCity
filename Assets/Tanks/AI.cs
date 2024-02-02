@@ -13,7 +13,12 @@ namespace BattleCity.Tanks
 		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
 		private static void Init()
 		{
-			BattleField.onAwake += () => enableEnemy = true;
+			BattleField.onAwake += () =>
+			{
+				enableEnemy = true;
+				dict[true].Clear();
+				dict[false].Clear();
+			};
 		}
 
 
@@ -40,12 +45,6 @@ namespace BattleCity.Tanks
 			cts.Cancel();
 			cts.Dispose();
 			cts = new();
-		}
-
-
-		private void OnDestroy()
-		{
-			dict[isPlayer].Remove(this);
 		}
 
 
@@ -78,7 +77,7 @@ namespace BattleCity.Tanks
 		private const int DELAY = 200;
 		private async void MoveAndShoot()
 		{
-			using var token = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, tank.Token, BattleField.Token);
+			using var token = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, BattleField.Token);
 			var vectors = new List<Vector3>
 			{
 				Vector3.up, Vector3.right, Vector3.down, Vector3.left
@@ -125,6 +124,7 @@ namespace BattleCity.Tanks
 		private async void AutoShoot()
 		{
 			using var token = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, tank.Token, BattleField.Token);
+
 		}
 	}
 }

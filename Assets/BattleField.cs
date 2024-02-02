@@ -1,4 +1,5 @@
-﻿using BattleCity.Platforms;
+﻿using BattleCity.Items;
+using BattleCity.Platforms;
 using BattleCity.Tanks;
 using Cysharp.Threading.Tasks;
 using System;
@@ -18,7 +19,6 @@ namespace BattleCity
 
 		/// <summary>
 		/// Số thứ tự của trận chiến<br/>
-		/// Nếu người chơi bị thua thì count == 0
 		/// </summary>
 		public static int count { get; private set; }
 
@@ -36,7 +36,6 @@ namespace BattleCity
 			Platform.LoadLevel(Main.level);
 			Camera.main.transform.position = new Vector3(Main.level.width / 2f, Main.level.height / 2f, -10f);
 			Camera.main.orthographicSize = Main.level.height / 2f;
-			Camera.main.rect = new(0, 0, 0.9f, 1);
 			// Đăng ký nút bấm gamepad: người chơi nhấn nút mượn mạng khi đã chết
 			onAwake();
 		}
@@ -49,7 +48,7 @@ namespace BattleCity
 
 			// Sinh Enemy
 			enemyLifes = 255;
-			for (int i = Main.mouseIndex == Main.ONE_PLAYER ? 3 : 6; i > 0; --i) Enemy.New();
+			for (int i = Main.mouseIndex == Main.ONE_PLAYER ? 3 : 6; i > 0; --i) Enemy.New().Forget();
 
 			// Sinh Player
 			if (count == 1)
@@ -57,8 +56,8 @@ namespace BattleCity
 				playerLifes[Color.Yellow] = playerLifes[Color.Green] = 255;
 				twoPlayers = Main.mouseIndex != Main.ONE_PLAYER;
 			}
-			Player.New(Color.Yellow);
-			if (twoPlayers) Player.New(Color.Green);
+			Player.New(Color.Yellow).Forget();
+			if (twoPlayers) Player.New(Color.Green).Forget();
 		}
 
 

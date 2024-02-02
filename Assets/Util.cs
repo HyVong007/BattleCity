@@ -166,7 +166,9 @@ namespace BattleCity
 	public sealed class ObjectPool<T> : IEnumerable<T> where T : Component
 	{
 		[SerializeField] private T prefab;
-		[SerializeField] private Transform visibleAnchor, hiddenAnchor;
+		[SerializeField] private Transform visibleAnchor;
+		[Tooltip("Phải tắt hiddenAnchor !")]
+		[SerializeField] private Transform hiddenAnchor;
 		[SerializeField] private List<T> hiddenObj = new();
 		private readonly List<T> visibleObj = new();
 		public GameObject gameObject { get; private set; }
@@ -179,6 +181,7 @@ namespace BattleCity
 		{
 			gameObject = new() { name = $"{(this.prefab = prefab).name} Pool" };
 			(hiddenAnchor = new GameObject { name = "Hidden" }.transform).SetParent(gameObject.transform);
+			hiddenAnchor.gameObject.SetActive(false);
 			(visibleAnchor = new GameObject { name = "Visible" }.transform).SetParent(gameObject.transform);
 		}
 
@@ -199,7 +202,12 @@ namespace BattleCity
 				item = hiddenObj[0];
 				hiddenObj.RemoveAt(0);
 			}
-			else item = UnityEngine.Object.Instantiate(prefab);
+			else if (active) item = UnityEngine.Object.Instantiate(prefab);
+			else
+			{
+				item = UnityEngine.Object.Instantiate(prefab, hiddenAnchor);
+				item.gameObject.SetActive(false);
+			}
 
 			item.transform.parent = visibleAnchor;
 			visibleObj.Add(item);
@@ -211,6 +219,9 @@ namespace BattleCity
 
 		public void Recycle(T item)
 		{
+#if DEBUG
+			if (hiddenAnchor.gameObject.activeSelf) throw new Exception("hiddenAnchor phải tắt !");
+#endif
 			item.gameObject.SetActive(false);
 			item.transform.parent = hiddenAnchor;
 			visibleObj.Remove(item);
@@ -220,6 +231,9 @@ namespace BattleCity
 
 		public void Recycle()
 		{
+#if DEBUG
+			if (hiddenAnchor.gameObject.activeSelf) throw new Exception("hiddenAnchor phải tắt !");
+#endif
 			for (int i = 0; i < visibleObj.Count; ++i)
 			{
 				var item = visibleObj[i];

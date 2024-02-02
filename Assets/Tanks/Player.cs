@@ -19,15 +19,18 @@ namespace BattleCity.Tanks
 		{
 			var dict = players as Dictionary<Color, Player>;
 			var anchor = new GameObject().transform;
+			anchor.gameObject.SetActive(false);
 			anchor.name = "Players";
 			DontDestroyOnLoad(anchor);
 			foreach (var color in new Color[] { Color.Green, Color.Yellow })
 			{
-				var player = dict[color] = Instantiate(Addressables.LoadAssetAsync<GameObject>("Assets/Tanks/Prefab/Player.prefab")
-					.WaitForCompletion().GetComponent<Player>(), anchor);
+				var player = dict[color] = Addressables.InstantiateAsync("Assets/Tanks/Prefab/Player.prefab", anchor)
+					.WaitForCompletion().GetComponent<Player>();
+				player.gameObject.SetActive(false);
 				player.name = color.ToString();
 				player.color = color;
 			}
+			anchor.gameObject.SetActive(true);
 		}
 
 
@@ -59,7 +62,7 @@ namespace BattleCity.Tanks
 			return null;
 
 		SPAWN_PLAYER:
-			var pos= Main.level.playerIndexes[color].ToVector3();
+			var pos = Main.level.playerIndexes[color].ToVector3();
 			try { Destroy(Platform.platforms[(int)pos.x][(int)pos.y].gameObject); }
 			catch { }
 
@@ -200,7 +203,7 @@ namespace BattleCity.Tanks
 			await UniTask.Delay(1000);
 
 			if (BattleField.playerLifes[color] != 0
-				|| BattleField.playerLifes[3 - color] != 0) New(color);
+				|| BattleField.playerLifes[3 - color] != 0) New(color).Forget();
 			else if (!players[3 - color].gameObject.activeSelf) BattleField.End();
 		}
 
@@ -215,14 +218,22 @@ namespace BattleCity.Tanks
 		bool s;
 		private void Update()
 		{
-			if (color != Color.Yellow) return;
+			Vector3 newDir = default;
 
-			#region Input Move
-			Vector3 newDir = default; ;
-			if (Input.GetKey(KeyCode.UpArrow)) newDir = Vector3.up;
-			else if (Input.GetKey(KeyCode.RightArrow)) newDir = Vector3.right;
-			else if (Input.GetKey(KeyCode.DownArrow)) newDir = Vector3.down;
-			else if (Input.GetKey(KeyCode.LeftArrow)) newDir = Vector3.left;
+			if (color == Color.Yellow)
+			{
+				if (Input.GetKey(KeyCode.UpArrow)) newDir = Vector3.up;
+				else if (Input.GetKey(KeyCode.RightArrow)) newDir = Vector3.right;
+				else if (Input.GetKey(KeyCode.DownArrow)) newDir = Vector3.down;
+				else if (Input.GetKey(KeyCode.LeftArrow)) newDir = Vector3.left;
+			}
+			else
+			{
+				if (Input.GetKey(KeyCode.W)) newDir = Vector3.up;
+				else if (Input.GetKey(KeyCode.D)) newDir = Vector3.right;
+				else if (Input.GetKey(KeyCode.S)) newDir = Vector3.down;
+				else if (Input.GetKey(KeyCode.A)) newDir = Vector3.left;
+			}
 
 			if (!isMoving && newDir != default)
 			{
@@ -236,14 +247,13 @@ namespace BattleCity.Tanks
 					}
 				});
 			}
-			#endregion
 
-			if (Input.GetKey(KeyCode.RightAlt))
+			if ((color == Color.Yellow && Input.GetKey(KeyCode.RightAlt))
+				|| (color == Color.Green && Input.GetKey(KeyCode.LeftAlt)))
 			{
 				if (!isMoving) Shoot();
 				else s = true;
 			}
 		}
-
 	}
 }

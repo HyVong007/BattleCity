@@ -125,8 +125,7 @@ namespace BattleCity.Tanks
 			if (shipCount > 0)
 			{
 				--shipCount;
-				Addressables.InstantiateAsync("Assets/Items/Prefab/Ship.prefab")
-					.WaitForCompletion().GetComponent<Ship>().OnCollision(enemy);
+				Item.New<Ship>().OnCollision(enemy);
 			}
 			enemy.gameObject.SetActive(true);
 			return enemy;
@@ -135,7 +134,6 @@ namespace BattleCity.Tanks
 
 		private new void OnEnable()
 		{
-			x = i++; // Test
 			base.OnEnable();
 			(enemies as List<Enemy>).Add(this);
 			health = 2; // Test
@@ -173,49 +171,12 @@ namespace BattleCity.Tanks
 			pool.Recycle(this);
 			await UniTask.Delay(1000);
 
-			if (BattleField.enemyLifes != 0) New();
+			if (BattleField.enemyLifes != 0) New().Forget();
 			else if (enemies.Count == 0) BattleField.End();
 		}
 
 
 		protected override void AddBulletData(ref Bullet.Data data)
 			=> data.canDestroySteel = weapon != Weapon.Normal;
-
-
-
-
-		bool s;
-		static int i;
-		int x;
-		private void Update()
-		{
-			if (x != 0) return;
-			#region Input Move
-			Vector3 newDir = default; ;
-			if (Input.GetKey(KeyCode.W)) newDir = Vector3.up;
-			else if (Input.GetKey(KeyCode.D)) newDir = Vector3.right;
-			else if (Input.GetKey(KeyCode.S)) newDir = Vector3.down;
-			else if (Input.GetKey(KeyCode.A)) newDir = Vector3.left;
-
-			if (!isMoving && newDir != default)
-			{
-				if (direction != newDir) direction = newDir;
-				else if (CanMove(newDir)) Move(newDir).ContinueWith(() =>
-				{
-					if (s)
-					{
-						s = false;
-						Shoot();
-					}
-				});
-			}
-			#endregion
-
-			if (Input.GetKey(KeyCode.LeftShift))
-			{
-				if (!isMoving) Shoot();
-				else s = true;
-			}
-		}
 	}
 }

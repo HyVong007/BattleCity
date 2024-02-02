@@ -49,7 +49,7 @@ namespace BattleCity.Items
 			for (int v = 0; v < VECTORS.Length; ++v)
 			{
 				var index = origin + VECTORS[v];
-				var tank = Tank.tanks[index.x][index.y];
+				var tank = Tank.array[index.x][index.y];
 				if (tank && (tank is Player || Setting.enemyCanPickItem)) tmp.Add(tank);
 			}
 
@@ -60,8 +60,8 @@ namespace BattleCity.Items
 		}
 
 
-		public static T New<T>() where T : Item
-			=> Addressables.InstantiateAsync($"Assets/Items/Prefab/{typeof(T).Name}.prefab")
+		public static T New<T>(in Vector3 position = default) where T : Item
+			=> Addressables.InstantiateAsync($"Assets/Items/Prefab/{typeof(T).Name}.prefab", position, Quaternion.identity)
 			.WaitForCompletion().GetComponent<T>();
 
 
