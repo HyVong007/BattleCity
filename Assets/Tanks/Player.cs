@@ -63,7 +63,7 @@ namespace BattleCity.Tanks
 
 		SPAWN_PLAYER:
 			var pos = Main.level.playerIndexes[color].ToVector3();
-			try { Destroy(Platform.platforms[(int)pos.x][(int)pos.y].gameObject); }
+			try { Destroy(Platform.array[(int)pos.x][(int)pos.y].gameObject); }
 			catch { }
 
 			var player = players[color];

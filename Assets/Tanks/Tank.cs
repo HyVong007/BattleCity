@@ -107,7 +107,7 @@ namespace BattleCity.Tanks
 				if (array[(int)(pos.x * 2)][(int)(pos.y * 2)]) return false;
 				if (pos.ToVector3Int() != pos) continue;
 
-				var platform = Platform.platforms[(int)pos.x][(int)pos.y];
+				var platform = Platform.array[(int)pos.x][(int)pos.y];
 				if (!platform) continue;
 
 				if (!platform.CanMove(this, newDir)) return false;
@@ -130,8 +130,7 @@ namespace BattleCity.Tanks
 
 
 		#region Move
-		private UniTask moveTask;
-		public bool isMoving => moveTask.isRunning();
+		public bool isMoving { get; private set; }
 
 		[Tooltip("Tối đa 0.125")]
 		[SerializeField] private float moveSpeed;
@@ -144,6 +143,8 @@ namespace BattleCity.Tanks
 		{
 			direction = dir;
 			if (isMoving) throw new Exception();
+			isMoving = true;
+
 			using var token = CancellationTokenSource.CreateLinkedTokenSource(Token, BattleField.Token);
 			if (this == Δarray[index.x][index.y]) Δarray[index.x][index.y] = null;
 			index += dir.ToVector3Int();
@@ -153,10 +154,11 @@ namespace BattleCity.Tanks
 			for (float i = 0.5f / moveSpeed; i > 0; --i)
 			{
 				transform.position += dir;
-				await (moveTask = UniTask.Delay(delayMoving));
+				await UniTask.Delay(delayMoving);
 				if (token.IsCancellationRequested)
 				{
 					if (this) animator.runtimeAnimatorController = null;
+					isMoving = false;
 					return;
 				}
 			}
@@ -172,6 +174,8 @@ namespace BattleCity.Tanks
 			#region Check Special Platform
 
 			#endregion
+
+			isMoving = false;
 		}
 		#endregion
 

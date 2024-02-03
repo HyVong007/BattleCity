@@ -16,8 +16,7 @@ namespace BattleCity.Tanks
 		private static ObjectPool<Bullet> pool;
 
 		private List<Bullet> getList =>
-			direction.x == 0 ? Xs[(int)(transform.position.x * 2)]
-			: Ys[(int)(transform.position.y * 2)];
+			direction.x == 0 ? Xs[(int)(transform.position.x * 2)] : Ys[(int)(transform.position.y * 2)];
 
 
 		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -111,7 +110,7 @@ namespace BattleCity.Tanks
 					var pos = origin + vectors[v];
 					if (pos.ToVector3Int() != pos) continue;
 
-					var platform = Platform.platforms[(int)pos.x][(int)pos.y];
+					var platform = Platform.array[(int)pos.x][(int)pos.y];
 					if (platform) stop |= platform.OnCollision(this);
 				}
 				#endregion

@@ -55,7 +55,7 @@ namespace BattleCity.Items
 				foreach (var kvp in DIR_ID)
 				{
 					var pos = origin + kvp.Key;
-					var platform = Platform.platforms[(int)pos.x][(int)pos.y];
+					var platform = Platform.array[(int)pos.x][(int)pos.y];
 					if (platform)
 						if (platform is Border || platform is Eagle) continue;
 						else Destroy(platform.gameObject);

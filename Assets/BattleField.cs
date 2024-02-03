@@ -48,7 +48,7 @@ namespace BattleCity
 
 			// Sinh Enemy
 			enemyLifes = 255;
-			for (int i = Main.mouseIndex == Main.ONE_PLAYER ? 3 : 6; i > 0; --i) Enemy.New().Forget();
+			//for (int i = Main.mouseIndex == Main.ONE_PLAYER ? 3 : 6; i > 0; --i) Enemy.New().Forget();
 
 			// Sinh Player
 			if (count == 1)
@@ -57,7 +57,7 @@ namespace BattleCity
 				twoPlayers = Main.mouseIndex != Main.ONE_PLAYER;
 			}
 			Player.New(Color.Yellow).Forget();
-			if (twoPlayers) Player.New(Color.Green).Forget();
+			//if (twoPlayers) Player.New(Color.Green).Forget();
 		}
 
 

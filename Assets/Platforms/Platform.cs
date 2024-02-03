@@ -9,7 +9,7 @@ namespace BattleCity.Platforms
 {
 	public abstract class Platform : MonoBehaviour, IBulletCollision
 	{
-		public static ReadOnlyArray<ReadOnlyArray<Platform>> platforms { get; private set; }
+		public static ReadOnlyArray<ReadOnlyArray<Platform>> array { get; private set; }
 		private static Platform[][] Δarray;
 
 
@@ -48,7 +48,7 @@ namespace BattleCity.Platforms
 		{
 			anchor = new GameObject().transform;
 			anchor.name = "Platforms";
-			platforms = Util.NewReadOnlyArray(level.width, level.height, out Δarray,
+			array = Util.NewReadOnlyArray(level.width, level.height, out Δarray,
 				(x, y) => New(level.platforms[x][y], new(x, y)));
 		}
 
